@@ -1,0 +1,27 @@
+generated: '2026-08-06'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: forgeglobal.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 19 20:15:48 2026 GMT
+  hsts: null
+- host: api.bearrobotics.ai
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 13 17:06:45 2026 GMT
+  hsts: null
+domains:
+- domain: forgeglobal.com
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: none
+- domain: bearrobotics.ai
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine

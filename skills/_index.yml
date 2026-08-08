@@ -1,0 +1,27 @@
+generated: '2026-08-06'
+method: generated
+source: openapi/bear-robotics-cloud-openapi-original.yml + https://cloud.api.bearrobotics.ai/
+note: >-
+  Every operationId referenced below was verified verbatim against the OpenAPI 3.0.3 document
+  Bear Robotics publishes for API v1.3. Streaming RPCs named in the steps were verified against
+  grpc/v1/bear-robotics-services-cloud-api_service.proto.
+skills:
+- file: bear-robotics-dispatch-delivery-mission.md
+  name: Dispatch a Servi delivery mission
+  api: openapi/bear-robotics-cloud-openapi-original.yml
+  operations: [APIService_GetAvailableLocations, APIService_ListRobotIDs, APIService_GetRobotStatus, APIService_GetCurrentMap, APIService_CreateMission]
+- file: bear-robotics-monitor-fleet-health.md
+  name: Monitor fleet health
+  api: openapi/bear-robotics-cloud-openapi-original.yml
+  operations: [APIService_GetAvailableLocations, APIService_ListRobotIDs, APIService_GetRobotStatus, APIService_GetRobotSystemInfo, APIService_GetLocationInfo]
+- file: bear-robotics-receive-robot-events.md
+  name: Receive robot events by webhook
+  api: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  operations: [CreateWebhook, ListWebhooks, DeleteWebhook]
+  note: >-
+    Grounded in the gRPC RPC names, not operationIds: the webhook operations are absent from the
+    published OpenAPI v1.3 document. The REST paths below come from the docs prose.
+- file: bear-robotics-manage-maps-and-locations.md
+  name: Manage maps and locations
+  api: openapi/bear-robotics-cloud-openapi-original.yml
+  operations: [APIService_GetAvailableLocations, APIService_GetLocationInfo, APIService_GetCurrentMap, APIService_GetMap, APIService_SwitchMap, APIService_LocalizeRobot, APIService_SetPose]

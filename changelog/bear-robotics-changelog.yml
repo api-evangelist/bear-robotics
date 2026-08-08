@@ -1,0 +1,50 @@
+generated: '2026-08-06'
+method: searched
+source: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+scheme: dated release trains, one changelog page per train
+current_version: '1.3'
+current_release: June 2026
+index: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+entries:
+- version: '1.3'
+  date: '2026-06'
+  url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  breaking: false
+  compatible_with: '1.2'
+  minimum_robot_software: {servi: '26.02', carti: '26.02'}
+  additions:
+  - CreateWebhook - register an HTTP callback delivering robot events without a streaming connection
+  - ListWebhooks - list all webhook subscriptions for a distributor
+  - DeleteWebhook - soft-delete a webhook subscription by id
+  - SubscribeNavigationStatus - fleet-wide navigation state including whether a robot is stuck and why
+  - SubscribeOnlineStatus - fleet-wide cloud-to-robot connection state
+  - CreateMissionBatch - atomically create multiple missions; all-or-nothing
+  - AppendMissionBatch - atomically append multiple missions to the queue
+  - ClearMissionStatus - clear mission status; fails while a mission is running or paused
+  changes:
+  - GetRobotStatus/SubscribeRobotStatus gained navigation_state (field 11) and localization_state (field 10) on RobotState
+  - SubscribeEmergencyStopStatus now accepts core.RobotSelector for fleet-level subscriptions
+  - GetMap/GetCurrentMap now return md5_checksum on MapImageFileInfo
+  deprecations:
+  - MapImageFileInfo.checksum (CRC32C) deprecated in favor of md5_checksum
+  - SubscribeEmergencyStopStatusRequest.robot_id deprecated in favor of selector
+  developer_resources:
+  - First-party Postman collection for every unary REST endpoint with JWT auth wired (https://documenter.getpostman.com/view/44195110/2sBXwto8ex)
+- version: '1.2'
+  url: https://cloud.api.bearrobotics.ai/changelog/v1.2/
+  breaking: false
+- version: '1.1'
+  url: https://cloud.api.bearrobotics.ai/changelog/v1.1/
+  breaking: false
+- version: '1.0'
+  url: https://cloud.api.bearrobotics.ai/changelog/v1.0/
+  breaking: false
+- version: 0.1beta
+  url: https://cloud.api.bearrobotics.ai/changelog/v0.1beta/
+  breaking: false
+observed_surface_growth:
+  note: measured from the OpenAPI documents Bear publishes per train
+  v1.0: {operations: 7, schemas: 38}
+  v1.1: {operations: 18, schemas: 90}
+  v1.2: {operations: 20, schemas: 99}
+  v1.3: {operations: 23, schemas: 111}

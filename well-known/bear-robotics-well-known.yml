@@ -1,0 +1,43 @@
+generated: '2026-08-06'
+method: probed
+source: live GET probes on every Bear Robotics host in apis.yml and the OpenAPI servers[]
+result: none
+note: >-
+  No /.well-known/ discovery document is served on any Bear Robotics host. The marketing
+  site (Squarespace) answers 404 with an HTML shell for every path, the API host
+  api.bearrobotics.ai answers 401 for every path including /.well-known/* (the gateway
+  demands a JWT before routing), and the docs host (GitHub Pages) answers 404. Recorded as
+  an honest negative; no WellKnown / SecurityTxt pointer is wired because no document exists.
+hosts:
+- host: www.bearrobotics.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 404}
+- host: api.bearrobotics.ai
+  note: every path returns 401 Unauthorized; the host is a JWT-gated gRPC/REST gateway with no anonymous surface
+  documents:
+  - {path: /.well-known/security.txt, status: 401}
+  - {path: /.well-known/openid-configuration, status: 401}
+  - {path: /.well-known/oauth-authorization-server, status: 401}
+  - {path: /.well-known/oauth-protected-resource, status: 401}
+  - {path: /.well-known/agent-card.json, status: 401}
+  - {path: /.well-known/agent.json, status: 401}
+- host: api-auth.bearrobotics.ai
+  documents:
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: cloud.api.bearrobotics.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 404}

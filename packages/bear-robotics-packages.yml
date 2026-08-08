@@ -1,0 +1,51 @@
+generated: '2026-08-06'
+method: searched
+source: https://github.com/bearrobotics-public/cloud/tree/main/examples
+note: >-
+  Bear Robotics publishes no client library to any public package registry (npm, PyPI,
+  Maven Central, NuGet, pkg.go.dev, RubyGems, Packagist, crates.io all probed and empty).
+  What it does ship is first-party, MPL-2.0 licensed reference client code in its public
+  cloud repository, in three languages, each wiring API-key -> JWT authentication plus
+  unary and server-streaming gRPC wrappers with retry. Consumers generate the gRPC stubs
+  themselves from the published .proto files (see grpc/).
+distribution: source-only
+registry_published: false
+registries_probed:
+- {registry: npm, query: bearrobotics, results: 0}
+- {registry: pypi, names: [bearrobotics, bear-robotics, bearrobotics-api, bear-cloud-api], results: 0}
+- {registry: rubygems, query: bearrobotics, results: 0}
+packages:
+- language: python
+  registry: github
+  name: bearrobotics-public/cloud (examples/python)
+  url: https://github.com/bearrobotics-public/cloud/tree/main/examples/python
+  install: git clone https://github.com/bearrobotics-public/cloud.git && cd cloud/examples/python && ./generate_protos
+  kind: reference-client
+  official: true
+  license: MPL-2.0
+  components: [auth.py, unary_wrapper.py, streaming_wrapper.py, main.py]
+- language: java
+  registry: github
+  name: bearrobotics-public/cloud (examples/java)
+  url: https://github.com/bearrobotics-public/cloud/tree/main/examples/java
+  install: git clone https://github.com/bearrobotics-public/cloud.git && cd cloud/examples/java && ./gradlew build
+  kind: reference-client
+  official: true
+  license: MPL-2.0
+  components: [BearRoboticsClient.java, auth/BearAuthService.java, auth/JwtCredentials.java, unary/UnaryClient.java, streaming/StreamingClient.java]
+- language: csharp
+  registry: github
+  name: bearrobotics-public/cloud (examples/C#)
+  url: https://github.com/bearrobotics-public/cloud/tree/main/examples/C%23
+  install: git clone https://github.com/bearrobotics-public/cloud.git && cd "cloud/examples/C#" && dotnet build
+  kind: reference-client
+  official: true
+  license: MPL-2.0
+  components: [BearRoboticsClient.cs, Auth/BearAuthService.cs, Auth/JwtCredentials.cs, Unary/UnaryClient.cs, Streaming/StreamingClient.cs]
+tooling:
+- name: grpcurl
+  role: The CLI Bear documents for calling the gRPC API; third-party, not first-party.
+  url: https://github.com/fullstorydev/grpcurl
+- name: Postman collection (REST v1.3)
+  role: First-party, covers every unary REST endpoint with JWT auth wired.
+  url: https://documenter.getpostman.com/view/44195110/2sBXwto8ex

@@ -1,0 +1,84 @@
+generated: '2026-08-06'
+method: searched
+source: https://cloud.api.bearrobotics.ai/guides/authentication/
+docs: https://cloud.api.bearrobotics.ai/guides/authentication/
+derived_from: openapi/bear-robotics-cloud-openapi-original.yml
+summary:
+  types:
+  - http
+  oauth2_flows: []
+  api_key_in: []
+  note: >-
+    A two-stage model that the OpenAPI securityScheme alone does not describe. The spec declares
+    only the second stage (an HTTP bearer JWT). The first stage — exchanging a long-lived API key
+    for that JWT at a separate host — is documented in prose and is not in any machine-readable
+    contract.
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: JWT token obtained from the /authorizeApiAccess endpoint
+  sources:
+  - openapi/bear-robotics-cloud-openapi-original.yml
+  applied: 'globally, via a root-level `security: [{BearerAuth: []}]` on all 23 operations'
+token_exchange:
+  endpoint: https://api-auth.bearrobotics.ai/authorizeApiAccess
+  method: POST
+  content_type: application/json
+  host_note: The auth host is separate from the API host (api.bearrobotics.ai).
+  credential_document:
+    fields:
+    - name: api_key
+      description: A unique identifier for the credentials within Bear's system.
+    - name: secret
+      description: A passcode associated with the API key; must be stored securely.
+    - name: scope
+      description: >-
+        Fixed at the time the API key is issued. Represents the distributor the API key is
+        authorized for. This is a tenancy identifier, NOT an OAuth scope — there is no scope
+        selection, no consent step and no per-permission granularity, so no scopes/ artifact is
+        emitted for this provider.
+    note: All three fields must match for the credentials to be authorized.
+  example_curl: |
+    curl -X POST https://api-auth.bearrobotics.ai/authorizeApiAccess \
+        -H "Content-Type: application/json" \
+        -d $(cat /path/to/credentials.json)
+token_usage:
+  header: 'Authorization: Bearer <JWT>'
+  grpc: sent as gRPC call metadata on every outgoing request
+  rest: sent as a standard HTTP Authorization header
+  swagger_ui: the docs' Swagger UI accepts the JWT via its Authorize button
+expiry:
+  claim: exp
+  guidance: refresh periodically, ideally every 30 minutes
+  refresh_mechanism: re-POST the credentials document; there is no refresh token
+authorization_model:
+  boundary: distributor
+  granularity: all-or-nothing per distributor
+  note: >-
+    There are no scopes, roles or per-operation permissions. A credential either can act on a
+    robot or location or it cannot; calls referencing resources outside the distributor return
+    PERMISSION_DENIED. A key that can read robot status can also create missions and run system
+    commands — there is no read-only credential.
+provisioning:
+  self_serve: false
+  process: API keys are issued by a Bear Robotics account manager
+  evidence: 'v1.3 changelog, New API Customers: "Please contact your Account Manager to discuss API use cases and request API keys."'
+  contact: https://www.bearrobotics.ai/contact-sales
+transport:
+  tls: true
+  note: >-
+    All connections to the Bear Cloud API server are secured via TLS; server certificates are
+    signed by Google Trust Services. Probed 2026-08-06: api.bearrobotics.ai negotiates TLSv1.3.
+  exception: >-
+    The separate on-robot Bear Base API is documented with an insecure gRPC channel
+    (grpc.insecure_channel to 10.10.127.2:5123) over the robot's local ethernet link, and carries
+    no authentication of its own. Physical/network access to that link is the only control.
+discovery:
+  oidc: false
+  oauth_metadata: false
+  evidence: >-
+    /.well-known/openid-configuration and /.well-known/oauth-authorization-server return 404 on
+    www.bearrobotics.ai, api-auth.bearrobotics.ai and cloud.api.bearrobotics.ai, and 401 on
+    api.bearrobotics.ai (probed 2026-08-06). See well-known/bear-robotics-well-known.yml.

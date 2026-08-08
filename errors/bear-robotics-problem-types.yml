@@ -1,0 +1,75 @@
+generated: '2026-08-06'
+method: searched
+source: https://cloud.api.bearrobotics.ai/guides/errors/
+derived_from: openapi/bear-robotics-cloud-openapi-original.yml
+format: grpc-status
+note: >-
+  Bear Robotics does not use RFC 9457 problem+json. The API is gRPC-first and its error
+  model is the gRPC canonical status code set, with structured detail carried in
+  google.rpc.Status (BadRequest / FieldViolation, ErrorInfo). The REST projection maps
+  those codes onto HTTP statuses; the 4xx/5xx responses declared in the OpenAPI carry a
+  description only and no response schema, so an agent cannot machine-read the error body
+  shape from the spec alone.
+envelope:
+  grpc: google.rpc.Status
+  details: [google.rpc.BadRequest, google.rpc.BadRequest.FieldViolation, google.rpc.ErrorInfo]
+  rest: undocumented in the OpenAPI; 400/401/500/503/504 responses declare no content schema
+http_responses_declared_in_spec:
+- {status: '200', description: OK, content: application/json}
+- {status: '400', description: null, content: none}
+- {status: '401', description: null, content: none}
+- {status: '500', description: null, content: none}
+- {status: '503', description: null, content: none}
+- {status: '504', description: null, content: none}
+problems:
+- code: UNAUTHENTICATED
+  http: 401
+  title: Authentication error
+  detail: The request is missing valid authentication credentials (e.g., invalid token, expired session).
+  remediation: Confirm that the API key or JWT token is correct and has not expired. JWTs carry an `exp`; refresh roughly every 30 minutes.
+  source: https://cloud.api.bearrobotics.ai/guides/errors/
+- code: PERMISSION_DENIED
+  http: 403
+  title: Permission denied
+  detail: The request was authenticated, but the client does not have permission to access the requested resource.
+  remediation: Verify that the API key's distributor has permission for the target robot or location; double-check the spelling of every robot_id and location_id.
+  source: https://cloud.api.bearrobotics.ai/guides/errors/
+- code: INVALID_ARGUMENT
+  http: 400
+  title: Request fails validation
+  detail: The request payload is well-formed but contains invalid or missing values.
+  remediation: Review the request against the API schema. The error message typically includes google.rpc.BadRequest FieldViolation entries pinpointing the offending field.
+  source: https://cloud.api.bearrobotics.ai/guides/errors/
+- code: FAILED_PRECONDITION
+  http: 400
+  title: Robot software incompatible
+  detail: The robot's software version does not meet the compatibility requirements of the API.
+  remediation: Check the robot software version compatibility checklist. From API v1 onward, calls return this error when a version mismatch is detected. v1.3 requires servi-26.02 / carti-26.02.
+  source: https://cloud.api.bearrobotics.ai/guides/errors/
+- code: NOT_FOUND
+  http: 404
+  title: Webhook subscription not found
+  detail: No webhook subscription with the given id is accessible to the distributor - either it does not exist or it is owned by another distributor.
+  remediation: List subscriptions with ListWebhooks and confirm the id belongs to your distributor.
+  source: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+  source_operation: openapi/bear-robotics-cloud-openapi-original.yml#APIService_DeleteWebhook
+- code: DEADLINE_EXCEEDED
+  http: 504
+  title: Robot round-trip timed out
+  detail: >-
+    Unary RPCs that execute a command on a robot require a full round trip to the robot. If the
+    robot-side network drops the inbound request or the outbound response, the Cloud API service
+    issues a timeout after 10 seconds to unblock the caller.
+  remediation: Retry. Treat command RPCs as susceptible to the robot's local network; a 504 does not guarantee the command did not execute.
+  source: https://cloud.api.bearrobotics.ai/
+- code: INTERNAL
+  http: 500
+  title: Internal server error
+  detail: Internal server error occurred while processing the request.
+  remediation: Retry with backoff; escalate to your Bear Robotics account manager if persistent.
+  source: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+caveats:
+- >-
+  A 504 DEADLINE_EXCEEDED on a command RPC is ambiguous by design: the timeout fires at the
+  cloud service, not at the robot, so the command may still have been executed. There is no
+  idempotency key to make the retry safe.

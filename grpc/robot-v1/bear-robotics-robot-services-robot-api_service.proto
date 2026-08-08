@@ -1,0 +1,404 @@
+// File: api_service.proto
+//
+// Copyright 2026 Bear Robotics, Inc. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+syntax = "proto3";
+
+package bearrobotics.api.v1.services.robot;
+
+import "bearrobotics/api/v1/carti/conveyor.proto";
+import "bearrobotics/api/v1/core/errors.proto";
+import "bearrobotics/api/v1/core/metadata.proto";
+import "bearrobotics/api/v1/core/mission.proto";
+import "bearrobotics/api/v1/core/mission_status.proto";
+import "bearrobotics/api/v1/core/robot_status.proto";
+import "bearrobotics/api/v1/core/robot_system.proto";
+import "bearrobotics/api/v1/core/settings.proto";
+import "bearrobotics/api/v1/servi/tray_status.proto";
+
+// APIService defines the control, navigation, monitoring interface for
+// individual robots.
+service APIService {
+  // === Mission ===============================================================
+
+  // Append the given mission to the end of the mission queue.
+  //
+  // The mission will be added in the order it is received.
+  // A mission can be appended even when other missions are queued.
+  rpc AppendMission(AppendMissionRequest) returns (AppendMissionResponse) {}
+
+  // Atomically append multiple missions to the end of the mission queue.
+  //
+  // All missions are appended contiguously in the request order.
+  // Missions can be appended even when other missions are queued.
+  //
+  // If any mission in the batch fails validation or append, no missions are appended.
+  rpc AppendMissionBatch(AppendMissionBatchRequest) returns (AppendMissionBatchResponse);
+
+  // Create a mission to go charge a robot regardless of battery state.
+  //
+  // The call will fail if the robot is already on a different mission.
+  // The current mission needs to be canceled before the robot can be charged.
+  rpc ChargeRobot(ChargeRobotRequest) returns (ChargeRobotResponse) {}
+
+  // Clears the robot's mission status.
+  //
+  // The call will fail if the robot is on a running or paused mission.
+  rpc ClearMissionStatus(ClearMissionStatusRequest) returns (ClearMissionStatusResponse) {}
+
+  // Create a mission for a given type.
+  //
+  // This call will fail if:
+  // - Another mission is running or queued.
+  // - The robot is unable to start a mission.
+  rpc CreateMission(CreateMissionRequest) returns (CreateMissionResponse) {}
+
+  // Atomically create multiple missions.
+  //
+  // The returned mission IDs match the order of the missions in the request.
+  //
+  // This call will fail if:
+  // - Another mission is running or queued.
+  // - The robot is unable to start a mission.
+  //
+  // If any mission in the batch fails validation or creation, no missions are created.
+  rpc CreateMissionBatch(CreateMissionBatchRequest) returns (CreateMissionBatchResponse) {}
+
+  // Creates a new mission workflow that mirrors touchscreen presets,
+  // including automatic return point selection.
+  //
+  // This call will fail if:
+  // - The robot is already executing another mission.
+  //   Returns a FAILED_PRECONDITION error.
+  // - The requested workflow is not compatible with the robot's type or current state.
+  //   Returns an INVALID_ARGUMENT error.
+  //
+  // Returns the list of mission_ids for the created missions if successful.
+  rpc CreateMissionWorkflow(CreateMissionWorkflowRequest) returns (CreateMissionWorkflowResponse) {}
+
+  // Moves to the next destination in the current mission.
+  //
+  // This call will fail if:
+  // - The robot is not on a mission.
+  //   Returns a FAILED_PRECONDITION error.
+  // - The skip goal request could not be delivered to the robot.
+  //   Returns an INTERNAL error.
+  //
+  // Returns the mission_id of the current mission where the goal was skipped.
+  rpc SkipGoal(SkipGoalRequest) returns (SkipGoalResponse) {}
+
+  // Subscribe to this robot's mission status.
+  //
+  // Upon subscription, the server immediately sends the latest known
+  // mission status, followed by updates whenever the mission status changes.
+  rpc SubscribeMissionStatus(SubscribeMissionStatusRequest) returns (stream SubscribeMissionStatusResponse) {}
+
+  // Update the specified mission with the given command.
+  //
+  // The call will fail if the robot is not on the specified mission
+  // or cannot execute the command.
+  rpc UpdateMission(UpdateMissionRequest) returns (UpdateMissionResponse) {}
+
+  // === Robot Status ==========================================================
+
+  // Get the latest robot state.
+  //
+  // Robot state includes connectivity and operational states.
+  rpc GetRobotStatus(GetRobotStatusRequest) returns (GetRobotStatusResponse) {}
+
+  // Subscribe to the robot's operational status.
+  //
+  // Upon subscription, the server immediately sends the latest known robot
+  // status, followed by updates whenever the robot status changes.
+  rpc SubscribeRobotStatus(SubscribeRobotStatusRequest) returns (stream SubscribeRobotStatusResponse) {}
+
+  // Subscribe to the robot's navigation status.
+  //
+  // Upon subscription, the server immediately sends the latest known
+  // navigation status, followed by updates whenever the navigation state
+  // changes. The stuck state indicates the robot is unable to make navigation
+  // progress (e.g., blocked by an obstacle or inside a restricted area)
+  // and is distinct from a mission failure.
+  //
+  // Prefer this RPC over SubscribeRobotStatus when only the navigation signal
+  // is of interest; the full robot status carries more data and updates
+  // more frequently.
+  rpc SubscribeNavigationStatus(SubscribeNavigationStatusRequest) returns (stream SubscribeNavigationStatusResponse) {}
+
+  // === Robot System =========================================================
+
+  // Execute a OS-level command on a robot.
+  //
+  // When rebooting the robot, a response will return immediately to acknowledge
+  // the request but may take several minutes before the robot reconnects.
+  rpc RunSystemCommand(RunSystemCommandRequest) returns (RunSystemCommandResponse) {}
+
+  // === Settings =============================================================
+
+  // Get the specified settings
+  //
+  // The request will return NotFound error if any of given keys does not exist.
+  // The response contains settings with their keys; order is not guaranteed to
+  // match the request order.
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse) {}
+
+  // Get a snapshot of all settings.
+  rpc GetAllSettings(GetAllSettingsRequest) returns (GetAllSettingsResponse) {}
+
+  // Reset the specified settings to their default values.
+  //
+  // Errors:
+  //   INVALID_ARGUMENT: `keys` is empty.
+  //   NOT_FOUND: One or more keys were not recognized (when
+  //       `unrecognized_key_policy` is REJECT or UNKNOWN).
+  rpc ResetSettings(ResetSettingsRequest) returns (ResetSettingsResponse) {}
+
+  // Set the specified setting.
+  //
+  // The request will be rejected if the setting key does not exist.
+  rpc SetSetting(SetSettingRequest) returns (SetSettingResponse) {}
+
+  // === Servi-Specific Extensions ============================================
+  // These endpoints are only available for the Servi robot family.
+  // Attempting to run a Servi command on a non-Servi robot
+  // will result in an INVALID_ARGUMENT error.
+
+  // Calibrates the trays on the robot.
+  //
+  // Calibrates all trays if no tray names are provided.
+  // Returns an INVALID_ARGUMENT error and rejects the request if any tray name
+  // is invalid.
+  // Returns an empty response on success.
+  rpc CalibrateTrays(CalibrateTraysRequest) returns (CalibrateTraysResponse) {}
+
+  // === Errors =================================================================
+
+  // Subscribe to error codes returned by the robot.
+  rpc SubscribeErrorCodes(SubscribeErrorCodesRequest) returns (stream SubscribeErrorCodesResponse) {}
+
+  // === Conveyor ==============================================================
+  // These endpoints are only available for the Carti robot family.
+  // Attempting to run a conveyor command on a non-Carti robot
+  // will result in an INVALID_ARGUMENT error.
+
+  // Retrieve the configured conveyor indexes for this robot.
+  //
+  // The returned indexes are based on the robot's configuration, not physical
+  // installation. The index represents the logical position of equipment on the
+  // robot:
+  // - In Carti 100, which features a vertical conveyor layout,
+  //   INDEX_1ST represents the uppermost conveyor of the robot.
+  // - In Carti 600 which has a horizontal layout of conveyors,
+  //   INDEX_1ST represents the front facing conveyor.
+  //
+  // Use this to determine which conveyor indexes are available for status
+  // monitoring and control operations.
+  rpc GetConveyorIndex(GetConveyorIndexRequest) returns (GetConveyorIndexResponse) {}
+
+  // Subscribe to conveyor status updates for every conveyor index.
+  //
+  // Upon subscription:
+  // - The latest known conveyor states are sent immediately.
+  // - Updates are streamed when any conveyor state changes.
+  //
+  // The status includes operation state (rolling/stopped), payload state
+  // (loaded/empty), health state (ok/error), and installation state
+  // (installed/not installed).
+  //
+  // Notes:
+  // - Only installed conveyors will report status updates.
+  // - Payload detection may have false positives due to beam sensor
+  // limitations.
+  rpc SubscribeConveyorStatus(SubscribeConveyorStatusRequest) returns (stream SubscribeConveyorStatusResponse) {}
+
+  // Control conveyor motor operations for the specified conveyor indexes.
+  //
+  // This call allows manual control of conveyor motors for
+  // clockwise/counter-clockwise rotation or stop commands. Multiple conveyors
+  // can be controlled simultaneously.
+  //
+  // This call will fail if:
+  // - Any specified conveyor index is not installed on the robot.
+  // - The robot is in an error state that prevents conveyor control.
+  //
+  // Notes:
+  // - For Carti 100: Motor rotates about X-axis (robot's forward direction).
+  //   CW rotation moves conveyor right, CCW rotation moves conveyor left.
+  // - For Carti 600: Motor rotates about Y-axis with front/rear sections.
+  //   CW rotation moves from front to rear, CCW rotation moves from rear to
+  //   front.
+  rpc ControlConveyor(ControlConveyorRequest) returns (ControlConveyorResponse) {}
+}
+
+message AppendMissionRequest {
+  core.Mission mission = 1;
+}
+
+message AppendMissionResponse {
+  // The unique identifier of the appended mission.
+  string mission_id = 1;
+}
+
+message AppendMissionBatchRequest {
+  repeated AppendMissionRequest missions = 1;
+}
+
+message AppendMissionBatchResponse {
+  repeated string mission_ids = 1;
+}
+
+message CalibrateTraysRequest {
+  servi.TraySelector selector = 1;
+}
+
+message CalibrateTraysResponse {}
+
+message ChargeRobotRequest {}
+
+message ChargeRobotResponse {
+  string mission_id = 1;
+}
+
+message ControlConveyorRequest {
+  repeated carti.ConveyorMotorCommand commands = 1;
+}
+
+message ControlConveyorResponse {}
+
+message ClearMissionStatusRequest {}
+
+message ClearMissionStatusResponse {
+  // The unique identifiers of the cleared missions.
+  repeated string mission_ids = 1;
+}
+
+message CreateMissionRequest {
+  core.Mission mission = 1;
+}
+
+message CreateMissionResponse {
+  string mission_id = 1;
+}
+
+message CreateMissionBatchRequest {
+  repeated CreateMissionRequest missions = 1;
+}
+
+message CreateMissionBatchResponse {
+  repeated string mission_ids = 1;
+}
+
+message CreateMissionWorkflowRequest {
+  core.MissionWorkflow mission_workflow = 1;
+}
+
+message CreateMissionWorkflowResponse {
+  repeated string mission_ids = 1;
+}
+
+message GetAllSettingsRequest {}
+
+message GetAllSettingsResponse {
+  repeated core.Setting settings = 1;
+}
+
+message GetConveyorIndexRequest {}
+
+message GetConveyorIndexResponse {
+  repeated int32 indexes = 1;
+}
+
+message GetRobotStatusRequest {}
+
+message GetRobotStatusResponse {
+  core.RobotState robot_state = 1;
+}
+
+message GetSettingsRequest {
+  repeated string keys = 1;
+}
+
+message GetSettingsResponse {
+  repeated core.Setting settings = 1;
+}
+
+// Request message for the ResetSettings RPC.
+message ResetSettingsRequest {
+  // Setting keys to reset to their default values. Must not be empty.
+  repeated string keys = 1;
+
+  // Controls how unrecognized keys are handled.
+  // See `UnrecognizedKeyPolicy` for available options.
+  core.UnrecognizedKeyPolicy unrecognized_key_policy = 2;
+}
+
+// Response message for the ResetSettings RPC.
+message ResetSettingsResponse {
+  // Keys from the request that were not recognized. Only populated when
+  // `ResetSettingsRequest.unrecognized_key_policy` is SKIP.
+  repeated string unrecognized_keys = 1;
+}
+
+message RunSystemCommandRequest {
+  core.SystemCommand system_command = 1;
+}
+
+message RunSystemCommandResponse {}
+
+message SetSettingRequest {
+  core.Setting setting = 1;
+}
+
+message SetSettingResponse {}
+
+message SkipGoalRequest {
+  // Empty request - always skips the current goal in the active mission
+}
+
+message SkipGoalResponse {
+  // The unique identifier of the mission where the goal was skipped.
+  string mission_id = 1;
+}
+
+message SubscribeConveyorStatusRequest {}
+
+message SubscribeConveyorStatusResponse {
+  repeated carti.ConveyorState states = 1;
+}
+
+message SubscribeErrorCodesRequest {}
+
+message SubscribeErrorCodesResponse {
+  core.ErrorCodesWithMetadata error_codes = 1;
+}
+
+message SubscribeMissionStatusRequest {}
+
+message SubscribeMissionStatusResponse {
+  core.EventMetadata metadata = 1;
+  core.MissionStates mission_states = 2;
+}
+
+message SubscribeRobotStatusRequest {}
+
+message SubscribeRobotStatusResponse {
+  core.EventMetadata metadata = 1;
+  core.RobotState robot_state = 2;
+}
+
+message SubscribeNavigationStatusRequest {}
+
+message SubscribeNavigationStatusResponse {
+  core.EventMetadata metadata = 1;
+  core.NavigationState navigation_state = 2;
+}
+
+message UpdateMissionRequest {
+  core.MissionCommand mission_command = 1;
+}
+
+message UpdateMissionResponse {}

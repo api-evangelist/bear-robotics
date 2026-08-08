@@ -1,0 +1,57 @@
+generated: '2026-08-06'
+method: derived
+status: candidate
+source: openapi/bear-robotics-cloud-openapi-original.yml
+search_result: none
+searched:
+- {registry: npm, query: 'bear robotics mcp', hits: 0}
+- {surface: 'https://cloud.api.bearrobotics.ai/', finding: no MCP server referenced anywhere in the documentation}
+- {surface: 'https://github.com/bearrobotics-public', finding: four public repos (cloud, robot, firmware, cloud-with-experimental); none contains an MCP server}
+- {path: '/.well-known/ai-plugin.json', hosts: [www.bearrobotics.ai, api.bearrobotics.ai, cloud.api.bearrobotics.ai], statuses: [404, 401, 404]}
+note: >-
+  Bear Robotics publishes NO MCP server. The tools below are a CANDIDATE design derived
+  mechanically from the 23 unary REST operations in the published OpenAPI - a starting point
+  for a server Bear (or an integrator) could build, not a claim that one exists. Because no
+  server exists, NO MCPServer pointer is wired into apis.yml and no tool crosswalk is emitted:
+  there is nothing real to bind the operations to.
+server:
+  name: bear-robotics
+  exists: false
+  transport: null
+  url: null
+safety_note: >-
+  Any MCP server over this API exposes tools that move physical machines through occupied
+  space. RunSystemCommand, ControlConveyor, SetPose, LocalizeRobot and SwitchMap should not be
+  exposed to an autonomous agent without human-in-the-loop confirmation. The API offers no
+  idempotency key, so a retried write can double-enqueue a mission. See
+  agentic-access/bear-robotics-agentic-access.yml.
+tools:
+- {name: list_robot_ids, description: List the robot IDs available to the caller, optionally filtered by location, category: fleet, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_ListRobotIDs', read_only: true}
+- {name: get_available_locations, description: List the locations available to the caller, category: fleet, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetAvailableLocations', read_only: true}
+- {name: get_robot_status, description: Get the consolidated live state of a robot, category: status, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetRobotStatus', read_only: true}
+- {name: get_robot_system_info, description: Get static system information and configuration for a robot, category: status, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetRobotSystemInfo', read_only: true}
+- {name: get_location_info, description: Get the floors, sections and current maps for a location, category: locations, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetLocationInfo', read_only: true}
+- {name: get_current_map, description: Get the map a robot is currently using, category: locations, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetCurrentMap', read_only: true}
+- {name: get_map, description: Get a map by ID including annotations and image download info, category: locations, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetMap', read_only: true}
+- {name: get_conveyor_index, description: Get the current conveyor index on a Carti robot, category: carti, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_GetConveyorIndex', read_only: true}
+- {name: create_mission, description: Create a mission for a robot, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_CreateMission', read_only: false, physical_consequence: true}
+- {name: create_mission_batch, description: Atomically create multiple missions in one request, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_CreateMissionBatch', read_only: false, physical_consequence: true}
+- {name: append_mission, description: Append a mission to the end of a robot's mission queue, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_AppendMission', read_only: false, physical_consequence: true}
+- {name: append_mission_batch, description: Atomically append multiple missions to the queue, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_AppendMissionBatch', read_only: false, physical_consequence: true}
+- {name: update_mission, description: Update a mission in flight, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_UpdateMission', read_only: false, physical_consequence: true}
+- {name: create_mission_workflow, description: Create a multi-mission workflow for a robot, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_CreateMissionWorkflow', read_only: false, physical_consequence: true}
+- {name: skip_goal, description: Skip the current goal of the active mission, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_SkipGoal', read_only: false, physical_consequence: true}
+- {name: clear_mission_status, description: Clear a robot's mission status; fails while a mission is running or paused, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_ClearMissionStatus', read_only: false}
+- {name: charge_robot, description: Send a robot to charge, category: mission, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_ChargeRobot', read_only: false, physical_consequence: true}
+- {name: switch_map, description: Switch the map a robot is navigating on, category: locations, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_SwitchMap', read_only: false, physical_consequence: true}
+- {name: localize_robot, description: Localize a robot to a goal pose, category: navigation, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_LocalizeRobot', read_only: false, physical_consequence: true}
+- {name: set_pose, description: Set a robot's estimated pose, category: navigation, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_SetPose', read_only: false, physical_consequence: true}
+- {name: control_conveyor, description: Drive the conveyor motor on a Carti robot, category: carti, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_ControlConveyor', read_only: false, physical_consequence: true}
+- {name: calibrate_trays, description: Calibrate the trays on a Servi robot, category: servi, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_CalibrateTrays', read_only: false, physical_consequence: true}
+- {name: run_system_command, description: Run a system-level command on a robot, category: system, source_operation: 'openapi/bear-robotics-cloud-openapi-original.yml#APIService_RunSystemCommand', read_only: false, physical_consequence: true, safety_critical: true}
+coverage:
+  rest_operations_total: 23
+  candidate_tools: 23
+  read_only_tools: 8
+  write_tools: 15
+  streaming_rpcs_unrepresented: 12

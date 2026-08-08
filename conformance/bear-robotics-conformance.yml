@@ -1,0 +1,54 @@
+generated: '2026-08-06'
+method: derived
+source: openapi/bear-robotics-cloud-openapi-original.yml, grpc/v1/*.proto, https://cloud.api.bearrobotics.ai/guides/errors/
+note: >-
+  Bear Robotics publishes no compliance certifications (no trust center, no SOC 2 / ISO 27001
+  / HIPAA claim reachable on any public host), so no Compliance pointer is wired. The
+  standards below are the cross-cutting protocol conformances that are directly evidenced by
+  the published contract.
+standards:
+- id: grpc
+  conforms: true
+  evidence: bearrobotics.api.v1.services.cloud.APIService defined in grpc/v1/bear-robotics-services-cloud-api_service.proto; 39 RPCs (27 unary, 12 server-streaming)
+- id: protobuf3
+  conforms: true
+  evidence: every published .proto declares `syntax = "proto3"`
+- id: grpc-transcoding
+  conforms: true
+  evidence: google/api/annotations.proto imported and google.api.http bindings applied, producing the REST projection at openapi/bear-robotics-cloud-openapi-original.yml
+- id: openapi-3.0
+  conforms: true
+  evidence: openapi 3.0.3 document published at docs/v1.3/resources/openapi-v1-3.yaml, 23 operations, 111 schemas
+- id: grpc-status-codes
+  conforms: true
+  evidence: 'documented error model uses gRPC canonical codes (UNAUTHENTICATED, PERMISSION_DENIED, INVALID_ARGUMENT, FAILED_PRECONDITION, NOT_FOUND, DEADLINE_EXCEEDED, INTERNAL)'
+- id: google-rpc-status
+  conforms: true
+  evidence: 'errors guide: "include structured error details using google.rpc.Status and related types (e.g., BadRequest, ErrorInfo)"'
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 4xx/5xx responses in the OpenAPI carry no content schema; no application/problem+json anywhere
+- id: jwt-rfc7519
+  conforms: true
+  evidence: securitySchemes.BearerAuth type http, scheme bearer, bearerFormat JWT
+- id: oauth2
+  conforms: false
+  evidence: authentication is a proprietary api_key+secret+scope exchange at POST https://api-auth.bearrobotics.ai/authorizeApiAccess, not an OAuth 2.0 grant
+- id: oidc
+  conforms: false
+  evidence: no /.well-known/openid-configuration on any host (probed 2026-08-06)
+- id: tls
+  conforms: true
+  evidence: TLSv1.3 on api.bearrobotics.ai; docs state "All connections to the Bear Cloud API server are secured via TLS"
+- id: webhooks
+  conforms: true
+  evidence: 'v1.3 CreateWebhook/ListWebhooks/DeleteWebhook; HTTPS-only delivery URLs, retry classification, X-Bear-Webhook-Event-Id dedup header'
+- id: asyncapi
+  conforms: false
+  evidence: no AsyncAPI document published for the 12 streaming RPCs or the webhook event types
+- id: pagination
+  conforms: false
+  evidence: no page/cursor/limit parameter in any of the 23 REST operations; ListRobotIDs and ListWebhooks return unpaged lists
+- id: idempotency
+  conforms: false
+  evidence: no Idempotency-Key request header or parameter in the spec or docs; idempotency is documented only for the receiver side of webhook delivery

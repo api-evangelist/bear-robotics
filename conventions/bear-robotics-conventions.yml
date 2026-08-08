@@ -1,0 +1,117 @@
+generated: '2026-08-06'
+method: searched
+source: https://cloud.api.bearrobotics.ai/ (overview, guides/authentication, guides/errors, v1.3/resources/RestAPI, v1.3/resources/Webhooks)
+derived_from: openapi/bear-robotics-cloud-openapi-original.yml
+shape:
+  primary_surface: gRPC
+  secondary_surface: REST (google.api.http transcoding of the unary RPCs only)
+  note: >-
+    The contract is gRPC-first. The REST projection covers the 23 unary RPCs; the 12
+    server-streaming RPCs have no REST equivalent, so an HTTP-only client can command robots
+    and poll state but cannot subscribe to it. Webhooks (v1.3) are the HTTP-native substitute.
+  rpc_counts: {total: 39, unary: 27, server_streaming: 12, rest_projected: 23}
+authentication:
+  style: api-key exchange for a short-lived JWT bearer token
+  credential_fields: [api_key, secret, scope]
+  token_endpoint: https://api-auth.bearrobotics.ai/authorizeApiAccess
+  token_method: POST
+  header: 'Authorization: Bearer <JWT>'
+  expiry: JWT `exp` claim; docs recommend refreshing roughly every 30 minutes
+  transport: TLS; server certificates signed by Google Trust Services
+  provisioning: not self-serve - API keys are issued by a Bear Robotics account manager
+  docs: https://cloud.api.bearrobotics.ai/guides/authentication/
+  see_also: authentication/bear-robotics-authentication.yml
+naming:
+  management_api_json: camelCase (robotId, eventType, missionId)
+  webhook_delivery_body: snake_case (robot_id, current_mission_index, battery_state)
+  note: >-
+    The two directions disagree on purpose and the docs call it out. Requests and responses on
+    the management API use camelCase; the delivered webhook body uses the original proto
+    snake_case names, and filter paths and template placeholders address that snake_case body.
+    An agent building a receiver must not assume the request vocabulary.
+  enums: rendered by name (STATE_SUCCEEDED, CHARGE_METHOD_CONTACT), never by number
+request_style:
+  http_method: POST for every REST operation, including reads
+  path_form: /v1/<resource>/<verb> (e.g. /v1/mission/create, /v1/robot-ids/list)
+  note: >-
+    Because the REST surface is transcoded from gRPC, it is RPC-shaped rather than
+    resource-shaped. Every one of the 23 operations is a POST with a JSON body; there are no
+    path or query parameters and no GET reads. Do not expect REST caching or safe-method
+    semantics.
+  content_type: application/json
+idempotency:
+  request_level: none
+  header: null
+  evidence: >-
+    No Idempotency-Key parameter or header appears in any of the 23 operations, in any .proto,
+    or anywhere in the documentation.
+  risk: >-
+    A unary command RPC that times out returns DEADLINE_EXCEEDED (504) after 10 seconds, and the
+    timeout fires at the cloud service rather than at the robot - so the command may still have
+    executed. With no idempotency key, a blind retry of CreateMission can enqueue the mission
+    twice. Batch operations (CreateMissionBatch, AppendMissionBatch) are atomic all-or-nothing
+    within one call, which bounds partial failure but does not make the call replay-safe.
+  webhook_delivery:
+    receiver_idempotency: supported
+    header: X-Bear-Webhook-Event-Id
+    semantics: stable across retries of the same event so receivers can deduplicate
+    note: This is idempotency on the inbound (delivery) direction only. It does not make an outbound API call replay-safe.
+pagination:
+  supported: false
+  evidence: no page, cursor, limit or page_token parameter on any operation; ListRobotIDs and ListWebhooks return unbounded lists
+  filtering: ListRobotIDs accepts a RobotFilter carrying location_id
+field_expansion:
+  supported: false
+  note: >-
+    Instead of sparse fieldsets, Bear splits the read surface by granularity. GetRobotStatus /
+    SubscribeRobotStatus return the consolidated RobotState at 1Hz; narrower streams
+    (SubscribeRobotPose ~10Hz, SubscribeBatteryStatus, SubscribeNavigationStatus,
+    SubscribeOnlineStatus) return one slice at a higher rate.
+metadata:
+  user_defined: not supported
+  streaming_envelope:
+    fields: [timestamp, sequence_number]
+    schema: EventMetadata
+    timestamp_note: local to the robot that produced it; not globally synchronized, so it must not be used to order events across robots
+    sequence_note: incremental per stream and usable to detect duplicates, but may reset to 0 on a service or robot restart
+    guidance: use sequence_number and timestamp together for strict duplicate detection
+request_tracing:
+  request_id_header: none published
+  note: no correlation-id or request-id header is documented on requests or responses
+versioning:
+  style: uri-path major (/v0, /v1) plus dated backward-compatible minor trains (v1.0 - v1.3)
+  see_also: lifecycle/bear-robotics-lifecycle.yml
+error_envelope:
+  model: gRPC canonical status codes with google.rpc.Status details
+  rest_mapping: codes projected onto HTTP status (400/401/500/503/504 declared in the spec)
+  schema_published: false
+  note: the 4xx/5xx responses in the OpenAPI declare a description only, with no content schema, so the error body shape is not machine-readable from the spec
+  see_also: errors/bear-robotics-problem-types.yml
+rate_limits:
+  published: false
+  evidence: no rate-limit, quota or throttling language in the docs, the specs or the protos; no RateLimit-* or Retry-After header documented
+  adjacent_limits:
+  - server-streaming subscriptions are closed after a maximum of 60 minutes and must be re-established
+  - unary command RPCs time out at 10 seconds waiting for the robot round trip
+  - webhook subscriptions are auto-disabled after 20 consecutive final delivery failures
+delivery_guarantees:
+  streaming: best-effort, not at-least-once; individual updates may be dropped
+  webhooks: retried with exponential backoff on network errors, timeouts, 408, 425, 429 and any 5xx; all other non-2xx responses are permanent failures and are not retried; 3xx redirects are not followed
+tenancy:
+  boundary: distributor
+  note: >-
+    Every call is scoped to the distributor derived from the JWT. robot_id and location_id
+    values outside that distributor return PERMISSION_DENIED rather than NOT_FOUND.
+safety:
+  note: >-
+    This API moves physical machines through spaces containing people. RunSystemCommand,
+    ControlConveyor, SetPose, LocalizeRobot, SwitchMap and the mission-creation operations all
+    have physical consequence, and the contract offers no idempotency key, no dry-run mode and
+    no sandbox fleet. See agentic-access/bear-robotics-agentic-access.yml for the per-operation
+    execution-contract recommendations.
+cross_links:
+  errors: errors/bear-robotics-problem-types.yml
+  lifecycle: lifecycle/bear-robotics-lifecycle.yml
+  authentication: authentication/bear-robotics-authentication.yml
+  events: asyncapi/bear-robotics-webhooks.yml
+  agentic_access: agentic-access/bear-robotics-agentic-access.yml

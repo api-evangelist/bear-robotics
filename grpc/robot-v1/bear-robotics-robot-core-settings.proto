@@ -1,0 +1,30 @@
+// File: settings.proto
+//
+// Copyright 2026 Bear Robotics, Inc. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+syntax = "proto3";
+
+package bearrobotics.api.v1.core;
+
+// Setting represents a key-value pair for robot configuration.
+message Setting {
+  string key = 1;
+  string value = 2;
+}
+
+// Policy for handling setting keys that are not present in the registry.
+enum UnrecognizedKeyPolicy {
+  // Unspecified. Server applies default behavior (currently: REJECT).
+  UNRECOGNIZED_KEY_POLICY_UNKNOWN = 0;
+
+  // Skip unrecognized keys and continue the operation.
+  // Skipped keys are reported in the response.
+  UNRECOGNIZED_KEY_POLICY_SKIP = 1;
+
+  // Reject the entire RPC if any key is unrecognized.
+  UNRECOGNIZED_KEY_POLICY_REJECT = 2;
+}

@@ -1,0 +1,119 @@
+generated: '2026-08-06'
+method: derived
+source: openapi/bear-robotics-cloud-openapi-original.yml
+note: >-
+  Derived from the 111 component schemas and their $ref graph plus the id-reference fields
+  carried on request/response bodies. This is a fleet-robotics domain, not a records domain:
+  the durable entities are Location, Map and Robot, and everything else hangs off a Mission,
+  which is the unit of work an agent creates and watches.
+identifiers:
+  robot_id:
+    description: Opaque per-robot identifier. Docs examples use a `pennybot-<hex>` form.
+    example_form: pennybot-abc123
+  location_id:
+    description: Short alphanumeric site identifier. A location resolves to a set of robots.
+    example_form: 1D9X
+  mission_id:
+    description: Server-assigned UUID for a queued or executing mission.
+    example_form: cbd47ab1-df21-479e-9f72-677b81ab55b0
+  map_id:
+    description: Identifier for a map belonging to a floor section of a location.
+  destination_id:
+    description: Identifier of a named destination annotation on a map.
+  annotation_id:
+    description: Identifier of a map annotation.
+  webhook_id:
+    description: Server-assigned UUID for a webhook subscription.
+  distributor_id:
+    description: The client organization that owns API credentials, robots and webhook subscriptions. Derived from the auth context, never passed.
+entities:
+- name: Distributor
+  description: The tenancy boundary. Owns API keys, robots, locations and webhook subscriptions. Never appears as a request parameter - it is derived from the JWT.
+  key: distributor_id
+- name: Location
+  schema: Location
+  key: location_id
+  description: A physical site. Contains floors, which contain sections, which carry the current map.
+- name: Floor
+  schema: Location_Floor
+  description: A floor of a location.
+- name: Section
+  schema: Floor_Section
+  description: A section of a floor; carries current_map_id.
+- name: Map
+  schema: Map
+  key: map_id
+  description: A navigation map with annotations, an origin and a downloadable image file.
+- name: Annotation
+  schema: Annotation
+  key: annotation_id
+  description: A named feature on a map; carries the destinations a mission can target.
+- name: Destination
+  schema: Destination
+  key: destination_id
+  description: A named pose on a map that a goal can target.
+- name: Robot
+  schema: SystemInfo
+  key: robot_id
+  description: A physical robot. Its live state is RobotState; its static configuration is SystemInfo.
+- name: RobotState
+  schema: RobotState
+  description: The consolidated live state of a robot - connection, battery, e-stop, mission, pose, twist, localization, navigation, error codes, and the model-specific ServiState or CartiState.
+- name: Mission
+  schema: Mission
+  key: mission_id
+  description: The unit of work. A polymorphic union of BaseMission, ServiMission and CartiMission, each of which is itself a union of mission kinds.
+- name: MissionState
+  schema: MissionState
+  description: The lifecycle state of a mission plus its active goal and feedback.
+- name: Goal
+  schema: Goal
+  description: A single destination step within a mission.
+- name: MissionWorkflow
+  schema: MissionWorkflow
+  description: A multi-mission sequence, specialized as ServiWorkflow or CartiWorkflow.
+- name: WebhookSubscription
+  key: webhook_id
+  description: A registered HTTP callback. Not in the OpenAPI components (webhook management is documented separately); see asyncapi/bear-robotics-webhooks.yml.
+relationships:
+- {from: Distributor, to: Robot, kind: has_many, via: auth context}
+- {from: Distributor, to: Location, kind: has_many, via: auth context}
+- {from: Distributor, to: WebhookSubscription, kind: has_many, via: distributor_id}
+- {from: Location, to: Floor, kind: has_many, via: floors}
+- {from: Floor, to: Section, kind: has_many, via: sections}
+- {from: Section, to: Map, kind: has_one, via: current_map_id}
+- {from: Map, to: Annotation, kind: has_many, via: annotations}
+- {from: Annotation, to: Destination, kind: has_many, via: destinations}
+- {from: Destination, to: Pose, kind: has_one, via: pose}
+- {from: Map, to: MapImageDownloadInfo, kind: has_one, via: image_download_info}
+- {from: MapImageDownloadInfo, to: MapImageFileInfo, kind: has_one, via: file_info}
+- {from: MapImageDownloadInfo, to: SignedURL, kind: has_one, via: signed_url}
+- {from: Robot, to: Location, kind: belongs_to, via: location_id (RobotFilter)}
+- {from: Robot, to: Map, kind: has_one, via: current map (GetCurrentMap)}
+- {from: Robot, to: RobotState, kind: has_one, via: GetRobotStatus}
+- {from: Robot, to: Mission, kind: has_many, via: robot_id on mission queue operations}
+- {from: RobotState, to: MissionState, kind: has_one, via: mission_state}
+- {from: RobotState, to: BatteryState, kind: has_one, via: battery_state}
+- {from: RobotState, to: NavigationState, kind: has_one, via: navigation_state}
+- {from: RobotState, to: LocalizationState, kind: has_one, via: localization_state}
+- {from: RobotState, to: EmergencyStopState, kind: has_one, via: emergency_stop_state}
+- {from: RobotState, to: ErrorCodes, kind: has_one, via: error_codes}
+- {from: RobotState, to: ServiState, kind: has_one, via: servi_state}
+- {from: RobotState, to: CartiState, kind: has_one, via: carti_state}
+- {from: ServiState, to: TrayStates, kind: has_one, via: tray_states}
+- {from: CartiState, to: ConveyorState, kind: has_one, via: conveyor_state}
+- {from: Mission, to: MissionState, kind: has_one, via: mission_id}
+- {from: MissionState, to: Goal, kind: has_one, via: current_goal}
+- {from: Mission, to: Goal, kind: has_many, via: mission-kind params}
+- {from: MissionWorkflow, to: Mission, kind: has_many, via: workflow steps}
+- {from: DeliveryParams, to: TrayMapping, kind: has_many, via: tray_mappings}
+- {from: TrayMapping, to: Goal, kind: has_one, via: goal}
+polymorphism:
+  note: >-
+    Mission is a three-level discriminated union and is the hardest part of this contract for
+    an agent to fill in correctly. Choose the product family first, then the mission kind.
+  Mission:
+    BaseMission: [NavigateMission, NavigateAutoMission]
+    ServiMission: [NavigateMission, NavigateAutoMission, DeliveryMission, BussingMission, DeliveryPatrolMission, BussingPatrolMission]
+    CartiMission: [NavigateMission, NavigateAutoMission, TraverseMission, TraversePatrolMission]
+  MissionWorkflow: [ServiWorkflow, CartiWorkflow]

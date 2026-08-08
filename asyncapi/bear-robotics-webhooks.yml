@@ -1,0 +1,132 @@
+generated: '2026-08-06'
+method: searched
+source: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+spec_type: Webhooks
+asyncapi_published: false
+asyncapi_note: >-
+  Bear Robotics publishes no AsyncAPI document. It has a substantial event surface - 12
+  server-streaming gRPC RPCs and, new in v1.3, an outbound HTTP webhook system - but neither is
+  described by a machine-readable event contract. This file captures the published webhook
+  catalog verbatim from the docs; it is not, and must not be presented as, an AsyncAPI spec.
+introduced: v1.3 (June 2026)
+management:
+  transport: gRPC, with a REST projection
+  operations:
+  - {name: CreateWebhook, grpc: bearrobotics.api.v1.services.cloud.APIService.CreateWebhook, rest: 'POST /v1/webhook/create'}
+  - {name: ListWebhooks, grpc: bearrobotics.api.v1.services.cloud.APIService.ListWebhooks, rest: 'POST /v1/webhook/list'}
+  - {name: DeleteWebhook, grpc: bearrobotics.api.v1.services.cloud.APIService.DeleteWebhook, rest: 'POST /v1/webhook/delete', semantics: soft delete}
+  spec_gap: >-
+    VERIFIED GAP. The three webhook RPCs exist in the published proto
+    (grpc/v1/bear-robotics-services-cloud-api_service.proto lines 433-445) and the REST paths are
+    documented in prose at https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/, but they are
+    absent from BOTH the published OpenAPI v1.3 document (23 operations, none of them webhook) and
+    the first-party v1.3 Postman collection (26 requests, none of them webhook). There is therefore
+    no operationId to cite and no machine-readable request/response schema for the newest and most
+    agent-relevant part of the v1.3 surface. Checked 2026-08-06.
+  no_update: >-
+    There is no update or re-enable call. A subscription that has been auto-disabled must be
+    deleted and recreated.
+  proto: grpc/v1/bear-robotics-core-webhook.proto
+subscription:
+  required_fields: [url, event_type, selector]
+  url_constraints: must use the https scheme and resolve to a publicly reachable address; loopback, private and link-local addresses are rejected
+  selector:
+    type: WebhookRobotSelector
+    oneof: [robot_ids, location_ids]
+    note: exactly one must be set; both or neither returns INVALID_ARGUMENT
+  filter:
+    type: FieldFilter
+    fields: [field, operator, values]
+    operators: [FILTER_OPERATOR_IN]
+    conditions_per_subscription: 1
+    note: >-
+      No AND/OR composition. The field path is snake_case, prefixed with `state.`, and must
+      resolve to a scalar leaf; index into a list to reach one (state.missions.0.mission_id).
+      robot_id is not filterable - scope robots with the selector. Paths and values are
+      validated at creation, so a saved subscription is always well-formed.
+  options:
+    description: optional human-readable label
+    headers: map<string,string> attached to every delivery
+    request_template: optional JSON object reshaping the body, with {{field_path}} placeholders resolving to robot_id or a scalar under state.*
+events:
+- event_type: mission
+  description: A snapshot of the robot's mission queue plus its currently active mission and goal.
+  payload_fields:
+  - {name: metadata, type: EventMetadata, description: timestamp and sequence_number forwarded from the robot}
+  - {name: missions, type: 'List<MissionState>', description: the robot's full mission queue in assignment order}
+  - {name: current_mission_index, type: int32}
+  - {name: current_mission, type: MissionState}
+  - {name: current_goal, type: Goal}
+  common_filter:
+    field: state.current_mission.state
+    operator: FILTER_OPERATOR_IN
+    values: [STATE_SUCCEEDED, STATE_FAILED, STATE_CANCELED]
+- event_type: battery
+  description: The robot's current battery state.
+  payload_fields:
+  - {name: metadata, type: EventMetadata}
+  - {name: battery_state, type: BatteryState, fields: [charge_percent, state, charge_method]}
+  common_filter:
+    field: state.battery_state.state
+    operator: FILTER_OPERATOR_IN
+    values: [STATE_DISCHARGING]
+delivery:
+  method: POST
+  content_type: application/json
+  envelope:
+    robot_id: string - the robot the event originated from
+    state: object - the event payload, shaped by event_type
+  naming: snake_case (unlike the camelCase management API)
+  defaults: every scalar field is emitted with defaults filled in; enums render by name; unset nested messages are delivered as null
+  headers:
+  - {name: X-Bear-Webhook-Id, description: the subscription that produced this delivery}
+  - {name: X-Bear-Webhook-Event-Id, description: unique per event and stable across retries, so receivers can deduplicate}
+  - {name: Content-Type, description: always application/json}
+  header_precedence: Bear's headers are applied after custom headers and cannot be overridden
+  header_templating: not supported - {{field_path}} placeholders are substituted only in the body
+signing:
+  signed: false
+  note: >-
+    Deliveries are NOT signed. The documented way to authenticate a delivery is to configure a
+    custom header carrying a shared secret or bearer token and verify it alongside the request
+    arriving over HTTPS. There is no HMAC signature, no timestamp header and therefore no
+    replay window - a receiver's only defenses are the shared secret and TLS.
+retries:
+  success: any 2xx
+  retryable: network errors, request timeouts, 408, 425, 429 and any 5xx; retried with exponential backoff
+  permanent: every other non-2xx, including most 4xx and 3xx redirects (redirects are not followed)
+auto_deactivation:
+  threshold: 20 consecutive final-failure deliveries
+  reset: any successful 2xx delivery resets the count to zero
+  effect: enabled flips to false; disabled_reason and disabled_at are set; no further events are delivered
+  recovery: delete and recreate the subscription; poll ListWebhooks and watch for enabled=false
+streaming_alternative:
+  note: >-
+    Before v1.3 the only way to receive events was to hold a server-streaming gRPC connection.
+    Those RPCs remain the higher-fidelity path and cover far more than the two webhook event
+    types.
+  max_stream_minutes: 60
+  qos: best-effort
+  modes:
+    frequency_based: fixed cadence regardless of change (SubscribeRobotPose, ~10Hz)
+    hybrid: minimum cadence plus updates on meaningful change (SubscribeRobotStatus, 1Hz base)
+    event_based: only on meaningful state change (SubscribeMissionStatus)
+  rpcs:
+  - SubscribeMissionStatus
+  - SubscribeRobotStatus
+  - SubscribeRobotPose
+  - SubscribeBatteryStatus
+  - SubscribeNavigationStatus
+  - SubscribeOnlineStatus
+  - SubscribeLocalizationStatus
+  - SubscribeEmergencyStopStatus
+  - SubscribeNetworkStatus
+  - SubscribeErrorCodes
+  - SubscribeTrayStatuses
+  - SubscribeConveyorStatus
+  source: grpc/v1/bear-robotics-services-cloud-api_service.proto
+gap:
+  note: >-
+    Ten of the twelve streaming signals have no webhook equivalent. An HTTP-only integration
+    can be notified about missions and battery, and nothing else - not e-stop, not error codes,
+    not navigation-stuck, not tray or conveyor state.

@@ -1,0 +1,69 @@
+generated: '2026-08-06'
+method: searched
+source: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+versioning:
+  scheme: uri-path + release train
+  current: v1.3
+  path_prefixes: [/v0, /v1]
+  note: >-
+    Two things version independently. The URI path carries a coarse major (/v0 for the legacy
+    surface, /v1 for the current one) while the API itself ships as dated minor release trains
+    (v0.1beta, v1.0, v1.1, v1.2, v1.3), each with its own OpenAPI document and changelog page.
+    Every train is declared backward compatible with its predecessor.
+  documents:
+    v1.0: https://cloud.api.bearrobotics.ai/v1.0/resources/RestAPI/
+    v1.1: https://cloud.api.bearrobotics.ai/v1.1/resources/RestAPI/
+    v1.2: https://cloud.api.bearrobotics.ai/v1.2/resources/RestAPI/
+    v1.3: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  docs: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+compatibility:
+  policy: backward-compatible minor trains
+  evidence: 'v1.3 changelog: "Bear Cloud API v1.3 is designed to be backward compatible with v1.2, so there should not be any issues working with the v1.2 gRPC APIs."'
+  coupled_to_device_firmware: true
+  minimum_robot_software:
+    servi: '26.02'
+    carti: '26.02'
+  note: >-
+    Unusually for a cloud API, the contract is coupled to firmware on physical robots. A call
+    against a robot running older software returns FAILED_PRECONDITION, so an API upgrade is a
+    fleet upgrade.
+deprecation:
+  policy_url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  style: field-level, soft, with named replacement
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    Deprecation is announced in the changelog and marked in the proto/OpenAPI with a named
+    replacement field, and the old field keeps working. There is no published sunset date, no
+    Sunset/Deprecation response header, and no RFC 8594 support.
+  deprecated_elements:
+  - element: MapImageFileInfo.checksum (CRC32C)
+    replacement: md5_checksum
+    announced: v1.3
+    source: openapi/bear-robotics-cloud-openapi-original.yml, grpc/v1/bear-robotics-core-map.proto
+  - element: SubscribeEmergencyStopStatusRequest.robot_id
+    replacement: selector (core.RobotSelector)
+    announced: v1.3
+    source: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - element: SubscribeMissionStatusResponse.mission_state
+    replacement: mission_states
+    source: grpc/v1/bear-robotics-services-cloud-api_service.proto
+deprecated_operations: []
+delivery_guarantees:
+  streaming_qos: best-effort
+  evidence: 'overview: "Messages have delivery guarantees (i.e. QoS) of best effort and not at least once."'
+  stream_max_duration_minutes: 60
+  unary_robot_timeout_seconds: 10
+status_page: null
+status_page_note: >-
+  No status page found. status.bearrobotics.ai does not resolve; no /status page on the
+  marketing site or the docs host (probed 2026-08-06).
+sla: null
+sla_note: >-
+  No public SLA or uptime commitment. Terms are in the Customer Agreement at
+  https://www.bearrobotics.ai/legal, which is a commercial contract rather than a service-level
+  publication.
+access:
+  model: contact-your-account-manager
+  evidence: 'v1.3 changelog, New API Customers: "Please contact your Account Manager to discuss API use cases and request API keys."'

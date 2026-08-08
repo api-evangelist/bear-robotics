@@ -1,0 +1,56 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Bear Cloud API
+  version: 1.0.0
+extends: openapi/bear-robotics-cloud-openapi-original.yml
+x-generated: '2026-08-06'
+x-method: generated
+x-source: >-
+  Derived from artifacts in this repository (conventions/, errors/, lifecycle/,
+  asyncapi/, agentic-access/, grpc/) against the verbatim OpenAPI 3.0.3 document Bear
+  Robotics publishes at
+  https://raw.githubusercontent.com/bearrobotics-public/cloud/main/docs/v1.3/resources/openapi-v1-3.yaml
+  The original is never mutated.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-profile: https://apis.io/providers/bear-robotics
+    x-api-slug: bear-robotics
+    x-primary-surface: grpc
+    x-rest-projection: google.api.http transcoding of unary RPCs only
+    x-grpc-service: bearrobotics.api.v1.services.cloud.APIService
+    x-proto-source: https://github.com/bearrobotics-public/cloud/tree/main/bearrobotics/api/v1
+    x-license: MPL-2.0 (published .proto files)
+    x-access-model: contact-account-manager
+    contact:
+      name: Bear Robotics
+      url: https://www.bearrobotics.ai/contact-sales
+- target: $.info
+  update:
+    x-conventions: conventions/bear-robotics-conventions.yml
+    x-error-catalog: errors/bear-robotics-problem-types.yml
+    x-lifecycle: lifecycle/bear-robotics-lifecycle.yml
+    x-webhooks-catalog: asyncapi/bear-robotics-webhooks.yml
+    x-data-model: data-model/bear-robotics-data-model.yml
+    x-agentic-access: agentic-access/bear-robotics-agentic-access.yml
+- target: $.info
+  update:
+    x-gaps-observed:
+      idempotency: none - no Idempotency-Key on any of the 23 operations
+      pagination: none - list operations are unbounded
+      examples: none - the spec carries no request or response examples
+      error_schema: none - 400/401/500/503/504 declare a description only, with no content schema
+      rate_limits: not published
+      operation_summaries: absent on all 23 operations
+      streaming: the 12 server-streaming RPCs have no REST or AsyncAPI representation
+- target: $.servers
+  update:
+    x-grpc-endpoint: api.bearrobotics.ai:443
+    x-auth-endpoint: https://api-auth.bearrobotics.ai/authorizeApiAccess
+- target: $.components.securitySchemes.BearerAuth
+  update:
+    x-token-endpoint: https://api-auth.bearrobotics.ai/authorizeApiAccess
+    x-token-exchange: POST an api_key / secret / scope credentials JSON to the auth endpoint
+    x-token-refresh: refresh roughly every 30 minutes; the JWT carries an exp claim
+    x-provisioning: API keys are issued by a Bear Robotics account manager; there is no self-serve signup
+    x-docs: https://cloud.api.bearrobotics.ai/guides/authentication/
