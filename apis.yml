@@ -37,32 +37,44 @@ tags:
 - Internet of Things
 - Company
 apis:
-- name: Bear Cloud API
+- name: Bear Base API
   description: >-
-    The gRPC-first cloud interface for third-party control of Bear Robotics fleets. 39 RPCs — 27
-    unary and 12 server-streaming — covering mission creation and workflow, locations and maps,
-    localization and navigation, robot and fleet status, system commands, Servi tray operations,
-    Carti conveyor operations, and (from v1.3) webhook subscriptions. A REST projection generated
-    by google.api.http transcoding exposes 23 of the unary RPCs over JSON; the streaming RPCs
-    have no REST equivalent. Authentication is an api_key/secret/scope exchange for a
-    short-lived JWT bearer token.
+    The on-robot gRPC service for direct local control of a Bear robot, used where the cloud is not in
+    the path. 23 RPCs covering drive/twist commands, odometry, battery and robot status, missions, settings
+    and errors. It runs on the robot's own PC and is reached over the robot's ethernet port on the local
+    network, so it has no public internet endpoint; the documented example channel is insecure (no TLS),
+    which is appropriate only on a trusted local link. No OpenAPI is published — Protobuf is the only
+    machine-readable contract.
+  humanURL: https://base.api.bearrobotics.ai/
+  baseURL: http://10.10.127.2:5123
+  x-baseurl-note: >-
+    This is a private, on-robot address documented by Bear as the robot PC's static ethernet IP and gRPC
+    port, not a placeholder and not an internet-reachable host. Recorded verbatim from https://base.api.bearrobotics.ai/guides/setup/setup_network/
+    rather than substituted for a public host that does not exist.
+  tags:
+  - Robotics
+  - Robot Control
+  - gRPC
+  - On-Premise
+  properties:
+  - type: Protobuf
+    url: grpc/robot-v1/bear-robotics-robot-services-robot-api_service.proto
+  - type: Documentation
+    url: https://base.api.bearrobotics.ai/
+- aid: bear-robotics:bear-robotics-carti-api
+  name: Bear Robotics Carti API
+  description: Carti-specific operations
   humanURL: https://cloud.api.bearrobotics.ai/
   baseURL: https://api.bearrobotics.ai
   tags:
-  - Robotics
-  - Fleet Management
-  - Mission Control
-  - gRPC
-  - Webhooks
+  - Carti
   properties:
   - type: OpenAPI
-    url: openapi/bear-robotics-cloud-openapi-original.yml
+    url: openapi/bear-robotics-carti-api-openapi.yml
   - type: Postman
     url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
   - type: Protobuf
     url: grpc/v1/bear-robotics-services-cloud-api_service.proto
-  - type: Overlay
-    url: overlays/bear-robotics-cloud-overlay.yaml
   - type: Documentation
     url: https://cloud.api.bearrobotics.ai/
   - type: APIReference
@@ -75,37 +87,196 @@ apis:
     url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
   - type: Webhooks
     url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
-- name: Bear Base API
-  description: >-
-    The on-robot gRPC service for direct local control of a Bear robot, used where the cloud is
-    not in the path. 23 RPCs covering drive/twist commands, odometry, battery and robot status,
-    missions, settings and errors. It runs on the robot's own PC and is reached over the robot's
-    ethernet port on the local network, so it has no public internet endpoint; the documented
-    example channel is insecure (no TLS), which is appropriate only on a trusted local link. No
-    OpenAPI is published — Protobuf is the only machine-readable contract.
-  humanURL: https://base.api.bearrobotics.ai/
-  baseURL: http://10.10.127.2:5123
-  x-baseurl-note: >-
-    This is a private, on-robot address documented by Bear as the robot PC's static ethernet IP
-    and gRPC port, not a placeholder and not an internet-reachable host. Recorded verbatim from
-    https://base.api.bearrobotics.ai/guides/setup/setup_network/ rather than substituted for a
-    public host that does not exist.
+- aid: bear-robotics:bear-robotics-fleet-management-api
+  name: Bear Robotics Fleet Management API
+  description: Fleet-level operations
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
   tags:
-  - Robotics
-  - Robot Control
-  - gRPC
-  - On-Premise
+  - Fleet Management
   properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-fleet-management-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
   - type: Protobuf
-    url: grpc/robot-v1/bear-robotics-robot-services-robot-api_service.proto
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
   - type: Documentation
-    url: https://base.api.bearrobotics.ai/
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+- aid: bear-robotics:bear-robotics-localization-navigation-api
+  name: Bear Robotics Localization & Navigation API
+  description: Low-level endpoints for robot pose and localization
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
+  tags:
+  - Localization & Navigation
+  properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-localization-navigation-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
+  - type: Protobuf
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - type: Documentation
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+- aid: bear-robotics:bear-robotics-locations-maps-api
+  name: Bear Robotics Locations & Maps API
+  description: Operations for fetching and setting location and map settings
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
+  tags:
+  - Locations & Maps
+  properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-locations-maps-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
+  - type: Protobuf
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - type: Documentation
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+- aid: bear-robotics:bear-robotics-mission-api
+  name: Bear Robotics Mission API
+  description: Basic mission-related operations
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
+  tags:
+  - Mission
+  properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-mission-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
+  - type: Protobuf
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - type: Documentation
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+- aid: bear-robotics:bear-robotics-robot-status-api
+  name: Bear Robotics Robot Status API
+  description: Queries for real-time robot status data
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
+  tags:
+  - Robot Status
+  properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-robot-status-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
+  - type: Protobuf
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - type: Documentation
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+- aid: bear-robotics:bear-robotics-robot-system-api
+  name: Bear Robotics Robot System API
+  description: System-level operations and Queries for static robot configurations
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
+  tags:
+  - Robot System
+  properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-robot-system-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
+  - type: Protobuf
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - type: Documentation
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
+- aid: bear-robotics:bear-robotics-servi-api
+  name: Bear Robotics Servi API
+  description: Servi-specific operations
+  humanURL: https://cloud.api.bearrobotics.ai/
+  baseURL: https://api.bearrobotics.ai
+  tags:
+  - Servi
+  properties:
+  - type: OpenAPI
+    url: openapi/bear-robotics-servi-api-openapi.yml
+  - type: Postman
+    url: openapi/bear-robotics-cloud-v1-3-postman-collection.json
+  - type: Protobuf
+    url: grpc/v1/bear-robotics-services-cloud-api_service.proto
+  - type: Documentation
+    url: https://cloud.api.bearrobotics.ai/
+  - type: APIReference
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/
+  - type: GettingStarted
+    url: https://cloud.api.bearrobotics.ai/guides/getting-started/
+  - type: Authentication
+    url: https://cloud.api.bearrobotics.ai/guides/authentication/
+  - type: ChangeLog
+    url: https://cloud.api.bearrobotics.ai/changelog/v1.3/
+  - type: Webhooks
+    url: https://cloud.api.bearrobotics.ai/v1.3/resources/Webhooks/
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: MCPServer
+  url: mcp/bear-robotics-mcp.yml
 - type: Website
   url: https://www.bearrobotics.ai/
 - type: DeveloperPortal
