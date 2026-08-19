@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Robot Status API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Robot Status",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_GetRobotStatus",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/robot-state/get",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Get the latest robot state.\n\n Robot state includes connectivity and operational states."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

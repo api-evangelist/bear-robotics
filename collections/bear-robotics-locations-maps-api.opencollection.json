@@ -1,0 +1,84 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Locations & Maps API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Locations & Maps",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_GetCurrentMap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/current-map/get",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieves the current map used by the robot.\n\n The returned map includes annotations and destinations, which can be used\n in mission destination, localization goals, and navigation.\n\n Note:\n - This API communicates directly with the robot.\n - image_url may be empty, as the robot does not serve rendered images."
+        },
+        {
+          "info": {
+            "name": "APIService_GetLocationInfo",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/location-info/get",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieve information about a specific location by its ID.\n\n The location includes metadata such as floors, sections, and their\n associated maps.\n\n Note:\n - This does not require robot connectivity."
+        },
+        {
+          "info": {
+            "name": "APIService_GetMap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/map/get",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieve a saved map by map_id from the cloud.\n\n Use this to fetch a stored map from the cloud database.\n\n Note:\n - This does not require robot connectivity."
+        },
+        {
+          "info": {
+            "name": "APIService_SwitchMap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/map/switch",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Switch the robot's current map to a specified map.\n\n The request must specify the floor level and section index of the desired\n map.\n Returns an INVALID_ARGUMENT error if there is no matching map.\n Returns the map_id of the new map if successful."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

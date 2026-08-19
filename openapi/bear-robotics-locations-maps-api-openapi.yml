@@ -1,0 +1,406 @@
+openapi: 3.2.0
+info:
+  title: Bear Cloud Locations & Maps API
+  description: "Bear Cloud APIs define the control, navigation, monitoring, and fleet management\n interface for robots."
+  version: 1.3.0
+servers:
+- url: https://api.bearrobotics.ai
+security:
+- BearerAuth: []
+tags:
+- name: Locations & Maps
+  description: Operations for fetching and setting location and map settings
+paths:
+  /v1/current-map/get:
+    post:
+      tags:
+      - Locations & Maps
+      description: "Retrieves the current map used by the robot.\n\n The returned map includes annotations and destinations, which can be used\n in mission destination, localization goals, and navigation.\n\n Note:\n - This API communicates directly with the robot.\n - image_url may be empty, as the robot does not serve rendered images."
+      operationId: APIService_GetCurrentMap
+      requestBody:
+        description: Robot identifier for map retrieval
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - robotId
+              properties:
+                robotId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCurrentMapResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/location-info/get:
+    post:
+      tags:
+      - Locations & Maps
+      description: "Retrieve information about a specific location by its ID.\n\n The location includes metadata such as floors, sections, and their\n associated maps.\n\n Note:\n - This does not require robot connectivity."
+      operationId: APIService_GetLocationInfo
+      requestBody:
+        description: Location identifier for info retrieval
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLocationInfoRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLocationInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/map/get:
+    post:
+      tags:
+      - Locations & Maps
+      description: "Retrieve a saved map by map_id from the cloud.\n\n Use this to fetch a stored map from the cloud database.\n\n Note:\n - This does not require robot connectivity."
+      operationId: APIService_GetMap
+      requestBody:
+        description: Map identifier for retrieval
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetMapRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMapResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/map/switch:
+    post:
+      tags:
+      - Locations & Maps
+      description: "Switch the robot's current map to a specified map.\n\n The request must specify the floor level and section index of the desired\n map.\n Returns an INVALID_ARGUMENT error if there is no matching map.\n Returns the map_id of the new map if successful."
+      operationId: APIService_SwitchMap
+      requestBody:
+        description: Robot identifier and map selector for switching maps
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwitchMapRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwitchMapResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+components:
+  schemas:
+    Destination:
+      type: object
+      properties:
+        destinationId:
+          type: string
+          description: Unique identifier for the destination.
+        displayName:
+          type: string
+          description: Human-readable name for the destination.
+        pose:
+          allOf:
+          - $ref: '#/components/schemas/Pose'
+          description: Position of the destination in the robot's map coordinate system.
+      description: "Destination represents a single point of interest on the map\n that a robot can navigate to and align itself with."
+    Floor_Section:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: Display name of the section, matching the name shown in Universe.
+        currentMapId:
+          type: string
+          description: ID of the current map associated with the section.
+      description: "Represents a section of a floor.\n Each Section corresponds to an area on a floor that may have its own\n map(s). We assume sections are disconnected; if connected sections are\n needed in the future, additional information will be added to represent\n the connections."
+    Map:
+      type: object
+      properties:
+        mapId:
+          type: string
+          description: "Unique identifier for the map.\n Example: \"9578\""
+        createdTime:
+          type: string
+          description: Timestamp indicating when the map was created.
+          format: date-time
+        modifiedTime:
+          type: string
+          description: Timestamp indicating the last time the map was modified.
+          format: date-time
+        displayName:
+          type: string
+          description: "Display name of the map, matching the name used in Bear Universe.\n Example: \"ITCT SEOUL\""
+        annotation:
+          allOf:
+          - $ref: '#/components/schemas/Annotation'
+          description: Annotation associated with this map, defining specific areas and destinations.
+        imageDownloadInfo:
+          allOf:
+          - $ref: '#/components/schemas/MapImageDownloadInfo'
+          description: "Information for downloading the map image, including signed URL and file metadata.\n This field is typically populated by the cloud service.\n When retrieving map data directly from the robot (e.g., via GetCurrentMap),\n this value may be empty."
+        origin:
+          allOf:
+          - $ref: '#/components/schemas/Origin'
+          description: Origin of the map relative to the map frame.
+        resolution:
+          type: number
+          description: Resolution of the map in meters per pixel.
+          format: float
+      description: Map represents a navigable map used by robots, including metadata and associated annotations.
+    SwitchMapRequest:
+      type: object
+      required:
+      - robotId
+      - mapSelector
+      properties:
+        robotId:
+          type: string
+        mapSelector:
+          type: object
+          required:
+          - floorLevel
+          - sectionIndex
+          properties:
+            floorLevel:
+              type: integer
+              format: int32
+              description: Positive integer floor_level begins at 1.
+            sectionIndex:
+              type: integer
+              format: int32
+              description: Non-negative integer section_index begins at 0.
+      description: Request object for switching robot maps
+    GetLocationInfoRequest:
+      type: object
+      required:
+      - locationId
+      properties:
+        locationId:
+          type: string
+          description: "The location_id is a 4 character alphanumeric identifier for the location.\n Example: \"3R0A\""
+      description: Request object for retrieving location information
+    GetMapRequest:
+      type: object
+      required:
+      - mapId
+      properties:
+        mapId:
+          type: string
+      description: Request object for retrieving a saved map
+    MapImageFileInfo:
+      type: object
+      properties:
+        checksum:
+          type: integer
+          description: '[Deprecated] CRC32C checksum of the map image file. Use md5Checksum instead.'
+          format: uint32
+          deprecated: true
+        size:
+          type: string
+          description: Size of the map image file in bytes.
+        md5Checksum:
+          type: string
+          description: MD5 checksum represented as a 32-character lowercase hexadecimal string.
+      description: MapImageFileInfo contains metadata about the map image file for integrity verification.
+    MapImageDownloadInfo:
+      type: object
+      properties:
+        fileInfo:
+          allOf:
+          - $ref: '#/components/schemas/MapImageFileInfo'
+          description: Information about the map image file for integrity verification.
+        downloadUrl:
+          allOf:
+          - $ref: '#/components/schemas/SignedURL'
+          description: The signed URL for downloading the map image.
+      description: MapImageDownloadInfo contains the information needed to download a map image.
+    Location_Floor:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: "Display name of the floor, matching the name shown in Universe.\n Example: \"Ground\""
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Floor_Section'
+          description: List of sections on this floor.
+      description: "Floor represents a single floor in the location, containing multiple\n sections."
+    Pose:
+      type: object
+      properties:
+        xMeters:
+          type: number
+          description: X-coordinate in meters within the map.
+          format: float
+        yMeters:
+          type: number
+          description: Y-coordinate in meters within the map.
+          format: float
+        headingRadians:
+          type: number
+          description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
+          format: float
+      description: Represents the robot's pose on the map.
+    Origin:
+      type: object
+      properties:
+        xM:
+          type: number
+          description: X-coordinate of the map origin in meters.
+          format: float
+        yM:
+          type: number
+          description: Y-coordinate of the map origin in meters.
+          format: float
+        yawRadians:
+          type: number
+          description: Orientation (yaw) of the map origin in radians.
+          format: float
+      description: Origin represents the starting point of the map in terms of its coordinates and orientation.
+    SwitchMapResponse:
+      type: object
+      properties:
+        mapId:
+          type: string
+    Annotation:
+      type: object
+      properties:
+        annotationId:
+          type: string
+          description: "Unique identifier for the annotation.\n Example: \"67305\""
+        displayName:
+          type: string
+          description: "Descriptive name for the annotation.\n Example: \"ITCT annotation A\""
+        createdTime:
+          type: string
+          description: Timestamp indicating when the annotation was created.
+          format: date-time
+        destinations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Destination'
+          description: "A collection of destinations associated with this annotation.\n Each entry pairs a destination ID (key) with its\n corresponding Destination message (value)."
+      description: "Annotation defines a specific area on the map, often used to\n group destinations or assign special parameters."
+    GetLocationInfoResponse:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/Location'
+    SignedURL:
+      type: object
+      properties:
+        url:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+      description: SignedURL represents a signed URL for file access with expiration.
+    GetCurrentMapResponse:
+      type: object
+      properties:
+        map:
+          $ref: '#/components/schemas/Map'
+    GetMapResponse:
+      type: object
+      properties:
+        map:
+          $ref: '#/components/schemas/Map'
+    Location:
+      type: object
+      properties:
+        locationId:
+          type: string
+          description: "A 4 character alphanumeric identifier for the location. This is unique\n among all locations in a Universe.\n Example: \"3R0A\"\n Legacy locations may use the display_name as the identifier, in which case\n the identifier may be longer or shorter than 4 characters."
+        createdTime:
+          type: string
+          description: Timestamp indicating when the location was created.
+          format: date-time
+        modifiedTime:
+          type: string
+          description: Timestamp indicating the last time the location was modified.
+          format: date-time
+        displayName:
+          type: string
+          description: "Display name of the location, matching the name shown in Universe.\n Examples: \"City Deli & Grill\", \"KNTH\""
+        floors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Location_Floor'
+          description: "Map of floors in the location, keyed by their floor level.\n The floor level is any non-negative integer starting from 0.\n Floor level is not necessarily sequential.\n Example:\n floors [\n   {\n     key: 0\n     value: {\n       display_name: \"Ground Floor\"\n       sections: [...]\n     }\n   }\n   {\n     key: 1\n     value: {\n       display_name: \"Second Floor\"\n       sections: [...]\n     }\n   }\n   {\n     key: 99\n     value: {\n       display_name: \"Roof\"\n       sections: [...]\n     }\n   }\n ]"
+      description: "Location represents a physical location with multiple floors and sections,\n including metadata such as creation and modification timestamps."
+  responses:
+    InternalServerError:
+      description: Internal Server Error
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    BadRequest:
+      description: Bad Request, usually caused by malfored request body.
+      headers:
+        grpc-status:
+          schema:
+            type: integer
+          description: gRPC status code
+        grpc-message:
+          schema:
+            type: string
+          description: detailed error message
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the /authorizeApiAccess endpoint

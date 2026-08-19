@@ -1,0 +1,54 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Localization & Navigation API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Localization & Navigation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_SetPose",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/pose/set",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the robot's expected pose on the map.\n\n Unlike LocalizeRobot, the robot will not attempt to verify whether the pose\n that is set align's with its camera view."
+        },
+        {
+          "info": {
+            "name": "APIService_LocalizeRobot",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/robot/localize",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Localizes the robot to a known pose or destination.\n\n While the robot is localizing,\n any subsequent requests to localize the robot will return a\n FAILED_PRECONDITION error until the process is completed."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,761 @@
+{
+  "item": [
+    {
+      "id": "f0196b27-5960-487c-a4a6-63281adeb60c",
+      "name": "Carti",
+      "description": {
+        "content": "Carti-specific operations",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "5b47f99f-8ab6-4346-b18a-9a9ac439b8ab",
+          "name": "API Service Get Conveyor Index",
+          "request": {
+            "name": "API Service Get Conveyor Index",
+            "description": {
+              "content": "Retrieves the configured conveyor indexes for the robot.\n\n Indexes represent logical positions, not physical installation:\n - Carti 100 (vertical): INDEX_1ST = uppermost conveyor\n - Carti 600 (horizontal): INDEX_1ST = front facing conveyor",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "conveyor-index",
+                "get"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"robotId\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5966a573-f9ee-4372-8ee8-a7f028e0ccb8",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor-index",
+                    "get"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"indexes\": [\n    5495,\n    7503\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "37cdfabb-f832-462b-b33b-add50ec2a385",
+              "name": "Bad Request, usually caused by malfored request body.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor-index",
+                    "get"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "gRPC status code",
+                  "key": "grpc-status",
+                  "value": "7923"
+                },
+                {
+                  "disabled": false,
+                  "description": "detailed error message",
+                  "key": "grpc-message",
+                  "value": "string"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9703c4b7-b4d6-4832-ae03-ba723647d221",
+              "name": "Unauthorized credentials, ensure the JWT is correct and up to date.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor-index",
+                    "get"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "52bb0229-62c9-49e3-b1bf-0addee5b52c1",
+              "name": "Internal Server Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor-index",
+                    "get"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "72fa6389-7b12-44c9-93d0-d467faac31de",
+              "name": "Service is temporarily unavailable, which can usually be resolved by backoff retries.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor-index",
+                    "get"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ac334cdd-4056-4a7d-826d-e603ab4486d3",
+              "name": "Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor-index",
+                    "get"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Gateway Timeout",
+              "code": 504,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a2e7e786-1eac-4abf-9b22-57c95e8f63a8",
+          "name": "API Service Control Conveyor",
+          "request": {
+            "name": "API Service Control Conveyor",
+            "description": {
+              "content": "Control conveyor motor operations for the specified conveyor indexes.\n\n This call allows manual control of conveyor motors for\n clockwise/counter-clockwise rotation or stop commands.\n\n This call will fail if:\n - Any specified conveyor index is not installed on the robot.\n - The robot is in an error state that prevents conveyor control.\n\n Notes:\n - Carti 100: CW = right, CCW = left (X-axis rotation)\n - Carti 600: CW = front→rear, CCW = rear→front (Y-axis rotation)",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "conveyor",
+                "control"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "9d017eba-7bdc-41e0-99fa-f13f63109384",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor",
+                    "control"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f2063656-4c1c-47c0-a741-4717200067fe",
+              "name": "Bad Request, usually caused by malfored request body.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor",
+                    "control"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "gRPC status code",
+                  "key": "grpc-status",
+                  "value": "7923"
+                },
+                {
+                  "disabled": false,
+                  "description": "detailed error message",
+                  "key": "grpc-message",
+                  "value": "string"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ea02f68a-bc15-460e-a380-ed838cf6bfd7",
+              "name": "Unauthorized credentials, ensure the JWT is correct and up to date.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor",
+                    "control"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "529acfe5-3286-47bb-b152-82f83191b98d",
+              "name": "Internal Server Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor",
+                    "control"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "5a2e199a-3243-427f-9ee2-0fc990c53841",
+              "name": "Service is temporarily unavailable, which can usually be resolved by backoff retries.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor",
+                    "control"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2c5f01b7-5c24-45ab-9268-f4cb7d0fb586",
+              "name": "Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "conveyor",
+                    "control"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"robotId\": \"<string>\",\n  \"commands\": [\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"command\": \"<enum>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Gateway Timeout",
+              "code": 504,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bearrobotics.ai",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "3d55c903-0725-4154-b7f5-56f3000ee2b4",
+    "name": "Bear Cloud Carti API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Bear Cloud APIs define the control, navigation, monitoring, and fleet management\n interface for robots.",
+      "type": "text/plain"
+    }
+  }
+}

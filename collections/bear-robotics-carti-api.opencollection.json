@@ -1,0 +1,54 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Carti API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Carti",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_GetConveyorIndex",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/conveyor-index/get",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieves the configured conveyor indexes for the robot.\n\n Indexes represent logical positions, not physical installation:\n - Carti 100 (vertical): INDEX_1ST = uppermost conveyor\n - Carti 600 (horizontal): INDEX_1ST = front facing conveyor"
+        },
+        {
+          "info": {
+            "name": "APIService_ControlConveyor",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/conveyor/control",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Control conveyor motor operations for the specified conveyor indexes.\n\n This call allows manual control of conveyor motors for\n clockwise/counter-clockwise rotation or stop commands.\n\n This call will fail if:\n - Any specified conveyor index is not installed on the robot.\n - The robot is in an error state that prevents conveyor control.\n\n Notes:\n - Carti 100: CW = right, CCW = left (X-axis rotation)\n - Carti 600: CW = front→rear, CCW = rear→front (Y-axis rotation)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

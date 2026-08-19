@@ -1,0 +1,50 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Fleet Management API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Fleet Management",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_GetAvailableLocations",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/available-locations/get"
+          },
+          "docs": "Return a map of locations of the user has access to.\n\nThe map consists of the location ID (key) paired with its human-readable\nname (value)."
+        },
+        {
+          "info": {
+            "name": "APIService_ListRobotIDs",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/robot-ids/list",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Return a list of robot IDs the user has access to, filtered by optional\n criteria.\n\n The list includes all known robots, regardless of their current connection\n status."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

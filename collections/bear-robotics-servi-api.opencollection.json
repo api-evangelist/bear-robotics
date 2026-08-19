@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Servi API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Servi",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_CalibrateTrays",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/trays/calibrate",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Calibrate the trays on the robot.\n\n Only applicable for tray-equipped robots (e.g., Servi, Servi Plus).\n\n Calibrates all trays if no tray names are provided.\n Returns an INVALID_ARGUMENT error and rejects the request if any tray name\n is invalid.\n Returns an empty response on success."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

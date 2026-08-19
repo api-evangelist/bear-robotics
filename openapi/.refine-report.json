@@ -1,0 +1,38 @@
+{
+  "provider": "bear-robotics",
+  "sources": [
+    "bear-robotics-carti-api-openapi.yml",
+    "bear-robotics-fleet-management-api-openapi.yml",
+    "bear-robotics-localization-navigation-api-openapi.yml",
+    "bear-robotics-locations-maps-api-openapi.yml",
+    "bear-robotics-mission-api-openapi.yml",
+    "bear-robotics-robot-status-api-openapi.yml",
+    "bear-robotics-robot-system-api-openapi.yml",
+    "bear-robotics-servi-api-openapi.yml"
+  ],
+  "outputs": [
+    "bear-robotics-carti-api-openapi.yml",
+    "bear-robotics-fleet-management-api-openapi.yml",
+    "bear-robotics-localization-navigation-api-openapi.yml",
+    "bear-robotics-locations-maps-api-openapi.yml",
+    "bear-robotics-mission-api-openapi.yml",
+    "bear-robotics-robot-status-api-openapi.yml",
+    "bear-robotics-robot-system-api-openapi.yml",
+    "bear-robotics-servi-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "bear-robotics-carti-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-fleet-management-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-localization-navigation-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-locations-maps-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-mission-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-robot-status-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-robot-system-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "bear-robotics-servi-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": []
+}

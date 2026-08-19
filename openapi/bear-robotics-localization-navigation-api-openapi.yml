@@ -1,0 +1,161 @@
+openapi: 3.2.0
+info:
+  title: Bear Cloud Localization & Navigation API
+  description: "Bear Cloud APIs define the control, navigation, monitoring, and fleet management\n interface for robots."
+  version: 1.3.0
+servers:
+- url: https://api.bearrobotics.ai
+security:
+- BearerAuth: []
+tags:
+- name: Localization & Navigation
+  description: Low-level endpoints for robot pose and localization
+paths:
+  /v1/pose/set:
+    post:
+      tags:
+      - Localization & Navigation
+      description: "Update the robot's expected pose on the map.\n\n Unlike LocalizeRobot, the robot will not attempt to verify whether the pose\n that is set align's with its camera view."
+      operationId: APIService_SetPose
+      requestBody:
+        description: Robot identifier and pose to set
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetPoseRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetPoseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/robot/localize:
+    post:
+      tags:
+      - Localization & Navigation
+      description: "Localizes the robot to a known pose or destination.\n\n While the robot is localizing,\n any subsequent requests to localize the robot will return a\n FAILED_PRECONDITION error until the process is completed."
+      operationId: APIService_LocalizeRobot
+      requestBody:
+        description: Localization goal and robot identifier
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocalizeRobotRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalizeRobotResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    BadRequest:
+      description: Bad Request, usually caused by malfored request body.
+      headers:
+        grpc-status:
+          schema:
+            type: integer
+          description: gRPC status code
+        grpc-message:
+          schema:
+            type: string
+          description: detailed error message
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    InternalServerError:
+      description: Internal Server Error
+  schemas:
+    SetPoseResponse:
+      type: object
+      properties: {}
+    Pose:
+      type: object
+      properties:
+        xMeters:
+          type: number
+          description: X-coordinate in meters within the map.
+          format: float
+        yMeters:
+          type: number
+          description: Y-coordinate in meters within the map.
+          format: float
+        headingRadians:
+          type: number
+          description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
+          format: float
+      description: Represents the robot's pose on the map.
+    Goal:
+      type: object
+      oneOf:
+      - required:
+        - destinationId
+        properties:
+          destinationId:
+            type: string
+      - required:
+        - pose
+        properties:
+          pose:
+            $ref: '#/components/schemas/Pose'
+      description: Goal represents a target destination or pose for the robot to navigate to.
+    LocalizeRobotResponse:
+      type: object
+      properties: {}
+    LocalizeRobotRequest:
+      type: object
+      required:
+      - robotId
+      - goal
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        goal:
+          $ref: '#/components/schemas/Goal'
+      description: Request object for localizing a robot
+    SetPoseRequest:
+      type: object
+      required:
+      - robotId
+      - pose
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        pose:
+          $ref: '#/components/schemas/Pose'
+      description: Request object for setting robot pose
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the /authorizeApiAccess endpoint

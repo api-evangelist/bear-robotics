@@ -1,0 +1,159 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bear Cloud Mission API",
+    "version": "1.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Mission",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "APIService_AppendMission",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission/append",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Append a mission to the end of the mission queue.\n\n Use this when a mission is currently running; otherwise, prefer\n CreateMission. Missions are executed in the order they are appended."
+        },
+        {
+          "info": {
+            "name": "APIService_AppendMissionBatch",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission/append-batch",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Atomically append multiple missions to the end of the mission queue.\n\n All missions are appended contiguously in the request order.\n Missions can be appended even when other missions are queued.\n\n If any mission in the batch fails validation or append, no missions are appended."
+        },
+        {
+          "info": {
+            "name": "APIService_CreateMission",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission/create",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new mission of a specified type.\n\n This call will fail if:\n - The robot is already executing another mission.\n - The requested mission is not compatible with the robot's current state."
+        },
+        {
+          "info": {
+            "name": "APIService_CreateMissionBatch",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission/create-batch",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Atomically create multiple missions.\n\n The returned mission IDs match the order of the missions in the request.\n\n This call will fail if:\n - Another mission is running or queued.\n - The robot is unable to start a mission.\n\n If any mission in the batch fails validation or creation, no missions are created."
+        },
+        {
+          "info": {
+            "name": "APIService_UpdateMission",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission/update",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Issue a command to control or update the current mission (e.g., pause,\n cancel).\n\n This call will fail if:\n - The robot is not on the specified mission.\n - The command is invalid for the robot's current state."
+        },
+        {
+          "info": {
+            "name": "APIService_CreateMissionWorkflow",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission-workflow/create",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a mission workflow that mirrors touchscreen presets (e.g., automatic return point selection).\nSupports Servi workflows and Carti workflows. Exactly one workflow type must be set."
+        },
+        {
+          "info": {
+            "name": "APIService_SkipGoal",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/goal/skip",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Advance the current mission to the next goal, skipping the current one.\nOn success, returns the mission ID of the mission where the goal was skipped."
+        },
+        {
+          "info": {
+            "name": "APIService_ClearMissionStatus",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/mission-status/clear",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Clears the robot's mission status.\n\n The call will fail if the robot is on a running or paused mission."
+        },
+        {
+          "info": {
+            "name": "APIService_ChargeRobot",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bearrobotics.ai/v1/robot/charge",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Instruct the robot to begin charging, regardless of its current battery\n level.\n\n This call will fail if:\n - The robot is already executing a mission.\n   The current mission must be canceled before issuing this command.\n\n Notes:\n - This command is only supported on robots equipped with a contact-based\n charging dock.\n   Robots without a compatible dock will return a INVALID_ARGUMENT error."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
