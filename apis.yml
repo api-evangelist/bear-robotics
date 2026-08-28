@@ -12,6 +12,18 @@ description: >-
   Protobuf definitions are published under MPL-2.0 in a public GitHub organization, an
   OpenAPI 3.0.3 document covers the transcoded REST projection, and v1.3 added outbound webhooks.
   API keys are issued through an account manager rather than self-serve signup.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: http://static1.squarespace.com/static/652cbb3fb1f91809d4610dc0/t/6a3dc3f863ff8c5ce8254bd0/1782432760376/og-bear-robotics-default.webp?format=1500w
 url: https://raw.githubusercontent.com/api-evangelist/bear-robotics/refs/heads/main/apis.yml
 x-type: company
