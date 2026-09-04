@@ -24,6 +24,19 @@ deliveryModel:
   - pricing
   generated: '2026-08-28'
   method: derived
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source:
+  - authentication
+  - security
+  generated: '2026-09-03'
+  method: derived
 image: http://static1.squarespace.com/static/652cbb3fb1f91809d4610dc0/t/6a3dc3f863ff8c5ce8254bd0/1782432760376/og-bear-robotics-default.webp?format=1500w
 url: https://raw.githubusercontent.com/api-evangelist/bear-robotics/refs/heads/main/apis.yml
 x-type: company
@@ -299,8 +312,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
-- type: MCPServer
+- type: X-MCPServerCandidate
   url: mcp/bear-robotics-mcp.yml
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
 - type: Website
   url: https://www.bearrobotics.ai/
 - type: DeveloperPortal
