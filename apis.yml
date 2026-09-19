@@ -59,7 +59,7 @@ tags:
 - gRPC
 - Protobuf
 - Webhook
-- Internet of Things
+- IoT
 - Company
 tags_raw:
 - Robotics
@@ -89,6 +89,11 @@ apis:
     port, not a placeholder and not an internet-reachable host. Recorded verbatim from https://base.api.bearrobotics.ai/guides/setup/setup_network/
     rather than substituted for a public host that does not exist.
   tags:
+  - Robotics
+  - Robot Control
+  - gRPC
+  - On-Premises
+  tags_raw:
   - Robotics
   - Robot Control
   - gRPC
