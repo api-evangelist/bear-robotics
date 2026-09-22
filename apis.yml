@@ -44,6 +44,10 @@ x-source: harvest:secondary-market
 specificationVersion: '0.23'
 created: '2026-08-06'
 modified: '2026-08-06'
+x-docs-platform: swagger-ui
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-09-20
+x-docs-hosting: github-pages
 x-enrichment:
   date: '2026-08-06'
   status: enriched
