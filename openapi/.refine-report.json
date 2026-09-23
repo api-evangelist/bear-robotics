@@ -1,14 +1,7 @@
 {
   "provider": "bear-robotics",
   "sources": [
-    "bear-robotics-carti-api-openapi.yml",
-    "bear-robotics-fleet-management-api-openapi.yml",
-    "bear-robotics-localization-navigation-api-openapi.yml",
-    "bear-robotics-locations-maps-api-openapi.yml",
-    "bear-robotics-mission-api-openapi.yml",
-    "bear-robotics-robot-status-api-openapi.yml",
-    "bear-robotics-robot-system-api-openapi.yml",
-    "bear-robotics-servi-api-openapi.yml"
+    "_original/bear-robotics-cloud-openapi-original.yml"
   ],
   "outputs": [
     "bear-robotics-carti-api-openapi.yml",
@@ -24,15 +17,18 @@
   "errors": [],
   "warnings": [],
   "notes": [
-    "bear-robotics-carti-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-fleet-management-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-localization-navigation-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-locations-maps-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-mission-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-robot-status-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-robot-system-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "bear-robotics-servi-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "bear-robotics-cloud-openapi-original.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
     "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "bear-robotics-carti-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-fleet-management-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-localization-navigation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-locations-maps-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-mission-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-robot-status-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-robot-system-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bear-robotics-servi-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

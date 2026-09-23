@@ -1,7 +1,9 @@
 openapi: 3.2.0
 info:
   title: Bear Cloud Robot System API
-  description: "Bear Cloud APIs define the control, navigation, monitoring, and fleet management\n interface for robots."
+  description: 'Bear Cloud APIs define the control, navigation, monitoring, and fleet management
+
+    interface for robots.'
   version: 1.3.0
 servers:
 - url: https://api.bearrobotics.ai
@@ -15,7 +17,12 @@ paths:
     post:
       tags:
       - Robot System
-      description: "Get the overall robot system information.\n\n When called, the server returns robot system information. The system info\n tends to be static and does not change often."
+      description: 'Get the overall robot system information.
+
+
+        When called, the server returns robot system information. The system info
+
+        tends to be static and does not change often.'
       operationId: APIService_GetRobotSystemInfo
       requestBody:
         description: Robot identifier for system info retrieval
@@ -46,11 +53,18 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+      summary: API service get robot system info
+      x-summary-source: derived
   /v1/system-command/run:
     post:
       tags:
       - Robot System
-      description: "Execute a OS-level command on a robot.\n\n When rebooting the robot, a response will return immediately to acknowledge\n the request but may take several minutes before the robot reconnects."
+      description: 'Execute a OS-level command on a robot.
+
+
+        When rebooting the robot, a response will return immediately to acknowledge
+
+        the request but may take several minutes before the robot reconnects.'
       operationId: APIService_RunSystemCommand
       requestBody:
         description: Robot identifier and system command to execute
@@ -76,28 +90,13 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+      summary: API service run system command
+      x-summary-source: derived
 components:
-  responses:
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
-    BadRequest:
-      description: Bad Request, usually caused by malfored request body.
-      headers:
-        grpc-status:
-          schema:
-            type: integer
-          description: gRPC status code
-        grpc-message:
-          schema:
-            type: string
-          description: detailed error message
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
-    InternalServerError:
-      description: Internal Server Error
   schemas:
+    RunSystemCommandResponse:
+      type: object
+      properties: {}
     SystemInfo:
       type: object
       properties:
@@ -114,9 +113,11 @@ components:
           type: string
           description: A user-friendly name for the robot, typically used for display purposes.
       description: SystemInfo contains various system-level data of a robot.
-    RunSystemCommandResponse:
+    GetRobotSystemInfoResponse:
       type: object
-      properties: {}
+      properties:
+        systemInfo:
+          $ref: '#/components/schemas/SystemInfo'
     RunSystemCommandRequest:
       type: object
       required:
@@ -147,11 +148,26 @@ components:
             required:
             - shutdown
       description: Request object for running system commands
-    GetRobotSystemInfoResponse:
-      type: object
-      properties:
-        systemInfo:
-          $ref: '#/components/schemas/SystemInfo'
+  responses:
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    InternalServerError:
+      description: Internal Server Error
+    BadRequest:
+      description: Bad Request, usually caused by malfored request body.
+      headers:
+        grpc-status:
+          schema:
+            type: integer
+          description: gRPC status code
+        grpc-message:
+          schema:
+            type: string
+          description: detailed error message
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
   securitySchemes:
     BearerAuth:
       type: http

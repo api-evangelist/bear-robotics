@@ -1,7 +1,9 @@
 openapi: 3.2.0
 info:
   title: Bear Cloud Carti API
-  description: "Bear Cloud APIs define the control, navigation, monitoring, and fleet management\n interface for robots."
+  description: 'Bear Cloud APIs define the control, navigation, monitoring, and fleet management
+
+    interface for robots.'
   version: 1.3.0
 servers:
 - url: https://api.bearrobotics.ai
@@ -15,7 +17,14 @@ paths:
     post:
       tags:
       - Carti
-      description: "Retrieves the configured conveyor indexes for the robot.\n\n Indexes represent logical positions, not physical installation:\n - Carti 100 (vertical): INDEX_1ST = uppermost conveyor\n - Carti 600 (horizontal): INDEX_1ST = front facing conveyor"
+      description: 'Retrieves the configured conveyor indexes for the robot.
+
+
+        Indexes represent logical positions, not physical installation:
+
+        - Carti 100 (vertical): INDEX_1ST = uppermost conveyor
+
+        - Carti 600 (horizontal): INDEX_1ST = front facing conveyor'
       operationId: APIService_GetConveyorIndex
       requestBody:
         description: Robot identifier for conveyor index retrieval
@@ -46,11 +55,32 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+      summary: API service get conveyor index
+      x-summary-source: derived
   /v1/conveyor/control:
     post:
       tags:
       - Carti
-      description: "Control conveyor motor operations for the specified conveyor indexes.\n\n This call allows manual control of conveyor motors for\n clockwise/counter-clockwise rotation or stop commands.\n\n This call will fail if:\n - Any specified conveyor index is not installed on the robot.\n - The robot is in an error state that prevents conveyor control.\n\n Notes:\n - Carti 100: CW = right, CCW = left (X-axis rotation)\n - Carti 600: CW = front→rear, CCW = rear→front (Y-axis rotation)"
+      description: 'Control conveyor motor operations for the specified conveyor indexes.
+
+
+        This call allows manual control of conveyor motors for
+
+        clockwise/counter-clockwise rotation or stop commands.
+
+
+        This call will fail if:
+
+        - Any specified conveyor index is not installed on the robot.
+
+        - The robot is in an error state that prevents conveyor control.
+
+
+        Notes:
+
+        - Carti 100: CW = right, CCW = left (X-axis rotation)
+
+        - Carti 600: CW = front→rear, CCW = rear→front (Y-axis rotation)'
       operationId: APIService_ControlConveyor
       requestBody:
         description: Robot identifier and conveyor control commands
@@ -76,12 +106,16 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+      summary: API service control conveyor
+      x-summary-source: derived
 components:
   responses:
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
     GatewayTimeout:
       description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    InternalServerError:
+      description: Internal Server Error
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:
@@ -95,9 +129,32 @@ components:
           description: detailed error message
     ServiceUnavailable:
       description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
-    InternalServerError:
-      description: Internal Server Error
   schemas:
+    ControlConveyorRequest:
+      type: object
+      required:
+      - robotId
+      - commands
+      properties:
+        robotId:
+          type: string
+        commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConveyorMotorCommand'
+          description: List of conveyor motor commands to execute
+      description: Request object for controlling conveyor operations
+    GetConveyorIndexResponse:
+      type: object
+      properties:
+        indexes:
+          type: array
+          items:
+            type: integer
+            format: int32
+    ControlConveyorResponse:
+      type: object
+      properties: {}
     ConveyorMotorCommand:
       type: object
       required:
@@ -113,31 +170,6 @@ components:
           format: enum
           description: Motor command (stop, clockwise, or counter-clockwise). COMMAND_CONVEYOR_MOTOR_UNKNOWN (0) is not allowed.
       description: Command to control a conveyor motor
-    GetConveyorIndexResponse:
-      type: object
-      properties:
-        indexes:
-          type: array
-          items:
-            type: integer
-            format: int32
-    ControlConveyorRequest:
-      type: object
-      required:
-      - robotId
-      - commands
-      properties:
-        robotId:
-          type: string
-        commands:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConveyorMotorCommand'
-          description: List of conveyor motor commands to execute
-      description: Request object for controlling conveyor operations
-    ControlConveyorResponse:
-      type: object
-      properties: {}
   securitySchemes:
     BearerAuth:
       type: http

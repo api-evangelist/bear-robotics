@@ -1,7 +1,9 @@
 openapi: 3.2.0
 info:
   title: Bear Cloud Localization & Navigation API
-  description: "Bear Cloud APIs define the control, navigation, monitoring, and fleet management\n interface for robots."
+  description: 'Bear Cloud APIs define the control, navigation, monitoring, and fleet management
+
+    interface for robots.'
   version: 1.3.0
 servers:
 - url: https://api.bearrobotics.ai
@@ -15,7 +17,12 @@ paths:
     post:
       tags:
       - Localization & Navigation
-      description: "Update the robot's expected pose on the map.\n\n Unlike LocalizeRobot, the robot will not attempt to verify whether the pose\n that is set align's with its camera view."
+      description: 'Update the robot''s expected pose on the map.
+
+
+        Unlike LocalizeRobot, the robot will not attempt to verify whether the pose
+
+        that is set align''s with its camera view.'
       operationId: APIService_SetPose
       requestBody:
         description: Robot identifier and pose to set
@@ -41,11 +48,20 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+      summary: API service set pose
+      x-summary-source: derived
   /v1/robot/localize:
     post:
       tags:
       - Localization & Navigation
-      description: "Localizes the robot to a known pose or destination.\n\n While the robot is localizing,\n any subsequent requests to localize the robot will return a\n FAILED_PRECONDITION error until the process is completed."
+      description: 'Localizes the robot to a known pose or destination.
+
+
+        While the robot is localizing,
+
+        any subsequent requests to localize the robot will return a
+
+        FAILED_PRECONDITION error until the process is completed.'
       operationId: APIService_LocalizeRobot
       requestBody:
         description: Localization goal and robot identifier
@@ -71,31 +87,10 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+      summary: API service localize robot
+      x-summary-source: derived
 components:
-  responses:
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
-    BadRequest:
-      description: Bad Request, usually caused by malfored request body.
-      headers:
-        grpc-status:
-          schema:
-            type: integer
-          description: gRPC status code
-        grpc-message:
-          schema:
-            type: string
-          description: detailed error message
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
-    InternalServerError:
-      description: Internal Server Error
   schemas:
-    SetPoseResponse:
-      type: object
-      properties: {}
     Pose:
       type: object
       properties:
@@ -112,6 +107,21 @@ components:
           description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
           format: float
       description: Represents the robot's pose on the map.
+    LocalizeRobotResponse:
+      type: object
+      properties: {}
+    SetPoseRequest:
+      type: object
+      required:
+      - robotId
+      - pose
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        pose:
+          $ref: '#/components/schemas/Pose'
+      description: Request object for setting robot pose
     Goal:
       type: object
       oneOf:
@@ -126,9 +136,6 @@ components:
           pose:
             $ref: '#/components/schemas/Pose'
       description: Goal represents a target destination or pose for the robot to navigate to.
-    LocalizeRobotResponse:
-      type: object
-      properties: {}
     LocalizeRobotRequest:
       type: object
       required:
@@ -141,18 +148,29 @@ components:
         goal:
           $ref: '#/components/schemas/Goal'
       description: Request object for localizing a robot
-    SetPoseRequest:
+    SetPoseResponse:
       type: object
-      required:
-      - robotId
-      - pose
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        pose:
-          $ref: '#/components/schemas/Pose'
-      description: Request object for setting robot pose
+      properties: {}
+  responses:
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    InternalServerError:
+      description: Internal Server Error
+    BadRequest:
+      description: Bad Request, usually caused by malfored request body.
+      headers:
+        grpc-status:
+          schema:
+            type: integer
+          description: gRPC status code
+        grpc-message:
+          schema:
+            type: string
+          description: detailed error message
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
   securitySchemes:
     BearerAuth:
       type: http
