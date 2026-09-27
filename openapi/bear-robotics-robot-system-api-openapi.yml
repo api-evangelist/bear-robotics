@@ -149,12 +149,12 @@ components:
             - shutdown
       description: Request object for running system commands
   responses:
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
     InternalServerError:
       description: Internal Server Error
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:
@@ -166,8 +166,8 @@ components:
           schema:
             type: string
           description: detailed error message
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
   securitySchemes:
     BearerAuth:
       type: http

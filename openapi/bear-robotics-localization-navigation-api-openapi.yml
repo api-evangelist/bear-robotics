@@ -90,6 +90,26 @@ paths:
       summary: API service localize robot
       x-summary-source: derived
 components:
+  responses:
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    InternalServerError:
+      description: Internal Server Error
+    BadRequest:
+      description: Bad Request, usually caused by malfored request body.
+      headers:
+        grpc-status:
+          schema:
+            type: integer
+          description: gRPC status code
+        grpc-message:
+          schema:
+            type: string
+          description: detailed error message
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
   schemas:
     Pose:
       type: object
@@ -107,21 +127,18 @@ components:
           description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
           format: float
       description: Represents the robot's pose on the map.
-    LocalizeRobotResponse:
-      type: object
-      properties: {}
-    SetPoseRequest:
+    LocalizeRobotRequest:
       type: object
       required:
       - robotId
-      - pose
+      - goal
       properties:
         robotId:
           type: string
           description: Unique identifier of the robot
-        pose:
-          $ref: '#/components/schemas/Pose'
-      description: Request object for setting robot pose
+        goal:
+          $ref: '#/components/schemas/Goal'
+      description: Request object for localizing a robot
     Goal:
       type: object
       oneOf:
@@ -136,41 +153,24 @@ components:
           pose:
             $ref: '#/components/schemas/Pose'
       description: Goal represents a target destination or pose for the robot to navigate to.
-    LocalizeRobotRequest:
+    SetPoseRequest:
       type: object
       required:
       - robotId
-      - goal
+      - pose
       properties:
         robotId:
           type: string
           description: Unique identifier of the robot
-        goal:
-          $ref: '#/components/schemas/Goal'
-      description: Request object for localizing a robot
+        pose:
+          $ref: '#/components/schemas/Pose'
+      description: Request object for setting robot pose
     SetPoseResponse:
       type: object
       properties: {}
-  responses:
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
-    InternalServerError:
-      description: Internal Server Error
-    BadRequest:
-      description: Bad Request, usually caused by malfored request body.
-      headers:
-        grpc-status:
-          schema:
-            type: integer
-          description: gRPC status code
-        grpc-message:
-          schema:
-            type: string
-          description: detailed error message
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    LocalizeRobotResponse:
+      type: object
+      properties: {}
   securitySchemes:
     BearerAuth:
       type: http
