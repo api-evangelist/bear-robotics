@@ -59,12 +59,10 @@ paths:
       x-summary-source: derived
 components:
   responses:
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     InternalServerError:
       description: Internal Server Error
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:
@@ -76,12 +74,11 @@ components:
           schema:
             type: string
           description: detailed error message
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
   schemas:
-    CalibrateTraysResponse:
-      type: object
-      properties: {}
     CalibrateTraysRequest:
       type: object
       required:
@@ -97,6 +94,9 @@ components:
               items:
                 type: string
       description: Request object for calibrating trays
+    CalibrateTraysResponse:
+      type: object
+      properties: {}
   securitySchemes:
     BearerAuth:
       type: http

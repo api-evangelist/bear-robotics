@@ -50,102 +50,20 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    TrayState:
+    ErrorCode:
       type: object
       properties:
-        trayName:
+        code:
+          type: integer
+          description: "Integer code indicating the type of error. Does not indicate severity.\n Please refer to the error code documentation for more details.\n TODO(BA-545): Add link to error code documentation."
+          format: int32
+        severity:
+          type: integer
+          description: Level of criticality of an error.
+          format: enum
+        message:
           type: string
-          description: "Unique string name for the given tray. e.g. \"top\", \"middle\", \"bottom\"\n TODO: link to Tray name definitions."
-        loadState:
-          type: integer
-          format: enum
-        weightKg:
-          type: number
-          description: Weight on the tray in kilograms. Minimum precision is 10g.
-          format: float
-        loadRatio:
-          type: number
-          description: "Ratio of the current load to the tray's maximum load capacity.\n This value may exceed 1.0 if the tray is overloaded.\n\n Caveats:\n - If the maximum load is misconfigured (e.g., set to 0.0),\n   this value may return NaN."
-          format: float
-      description: Represents the state of a single tray.
-    Twist:
-      type: object
-      properties:
-        linearVelocity:
-          type: number
-          format: float
-          description: Current speed along the robot's forward axis, in m/s. Positive for forward, negative for reverse.
-        angularVelocity:
-          type: number
-          format: float
-          description: Current rotation rate, in rad/s. Positive for clockwise when viewed from above.
-      description: Represents the current velocity of the robot in 2D (linear along the forward axis, angular around the vertical axis). Omitted when the robot does not report velocity.
-    TrayStates:
-      type: object
-      properties:
-        trayStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/TrayState'
-          description: "State of enabled trays, ordered from the top-most tray on the robot to the\n bottom."
-      description: A list of tray states reported by individual trays.
-    MissionType:
-      type: object
-      oneOf:
-      - properties:
-          baseType:
-            type: integer
-            format: enum
-        required:
-        - baseType
-      - properties:
-          serviType:
-            type: integer
-            format: enum
-        required:
-        - serviType
-      - properties:
-          cartiType:
-            type: integer
-            format: enum
-        required:
-        - cartiType
-      description: "MissionType defines the different types of missions that can be executed.\n This uses a oneof structure to categorize mission types by their source.\n Only one type field (baseType, serviType, or cartiType) can be set at a time.\n The individual enum types are defined in their respective mission.proto files."
-    StuckState:
-      type: object
-      properties:
-        state:
-          type: integer
-          format: enum
-          description: Current stuck state of the robot.
-        reason:
-          type: integer
-          format: enum
-          description: Reason the robot is stuck. Only meaningful when state is STATE_STUCK; otherwise expect REASON_UNKNOWN.
-      description: "Represents whether the robot is currently unable to make navigation\n progress, and the reason for it when known. \"Stuck\" is distinct from a\n mission failure: it is a transient, recoverable navigation condition."
-    Pose:
-      type: object
-      properties:
-        xMeters:
-          type: number
-          description: X-coordinate in meters within the map.
-          format: float
-        yMeters:
-          type: number
-          description: Y-coordinate in meters within the map.
-          format: float
-        headingRadians:
-          type: number
-          description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
-          format: float
-      description: Represents the robot's pose on the map.
-    LocalizationState:
-      type: object
-      properties:
-        state:
-          type: integer
-          format: enum
-      description: Represents the current state of the localization process.
+          description: Message about the error e.g. "Up camera process error."
     MissionState:
       type: object
       properties:
@@ -176,6 +94,95 @@ components:
           type: string
           description: Owner of the mission (e.g., "touchscreen", "api", etc.)
       description: MissionState represents the current state of a mission assigned to a robot.
+    Feedback:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: enum
+      description: "Feedback provides status updates on mission progress,\n specific to Carti Family robot missions."
+    ErrorCodes:
+      type: object
+      properties:
+        codes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorCode'
+    Pose:
+      type: object
+      properties:
+        xMeters:
+          type: number
+          description: X-coordinate in meters within the map.
+          format: float
+        yMeters:
+          type: number
+          description: Y-coordinate in meters within the map.
+          format: float
+        headingRadians:
+          type: number
+          description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
+          format: float
+      description: Represents the robot's pose on the map.
+    TrayState:
+      type: object
+      properties:
+        trayName:
+          type: string
+          description: "Unique string name for the given tray. e.g. \"top\", \"middle\", \"bottom\"\n TODO: link to Tray name definitions."
+        loadState:
+          type: integer
+          format: enum
+        weightKg:
+          type: number
+          description: Weight on the tray in kilograms. Minimum precision is 10g.
+          format: float
+        loadRatio:
+          type: number
+          description: "Ratio of the current load to the tray's maximum load capacity.\n This value may exceed 1.0 if the tray is overloaded.\n\n Caveats:\n - If the maximum load is misconfigured (e.g., set to 0.0),\n   this value may return NaN."
+          format: float
+      description: Represents the state of a single tray.
+    RobotConnection:
+      type: object
+      properties:
+        state:
+          type: integer
+          format: enum
+      description: Represents the online connection state between the cloud and the robot.
+    Goal:
+      type: object
+      oneOf:
+      - required:
+        - destinationId
+        properties:
+          destinationId:
+            type: string
+      - required:
+        - pose
+        properties:
+          pose:
+            $ref: '#/components/schemas/Pose'
+      description: Goal represents a target destination or pose for the robot to navigate to.
+    NavigationState:
+      type: object
+      properties:
+        stuckState:
+          allOf:
+          - $ref: '#/components/schemas/StuckState'
+          description: Whether the robot is currently stuck (unable to make navigation progress) and, when known, the reason.
+      description: Represents navigation-related state for the robot.
+    Twist:
+      type: object
+      properties:
+        linearVelocity:
+          type: number
+          format: float
+          description: Current speed along the robot's forward axis, in m/s. Positive for forward, negative for reverse.
+        angularVelocity:
+          type: number
+          format: float
+          description: Current rotation rate, in rad/s. Positive for clockwise when viewed from above.
+      description: Represents the current velocity of the robot in 2D (linear along the forward axis, angular around the vertical axis). Omitted when the robot does not report velocity.
     ServiState:
       type: object
       properties:
@@ -184,61 +191,6 @@ components:
           - $ref: '#/components/schemas/TrayStates'
           description: A collection of individual tray states from different trays.
       description: Represents the set of robot states specifically for Servi robots.
-    ConveyorState:
-      type: object
-      properties:
-        index:
-          type: integer
-          description: Unique identifier for the conveyor.
-          format: int32
-        operationState:
-          type: integer
-          format: enum
-        payloadState:
-          type: integer
-          format: enum
-        healthState:
-          type: integer
-          format: enum
-        installationState:
-          type: integer
-          format: enum
-      description: Conveyor state includes the operation status, payload status, and health status.
-    BaseFeedback:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: enum
-      description: "BaseFeedback provides status updates on mission progress,\n specific to base missions."
-    MissionState_MissionFeedback:
-      type: object
-      oneOf:
-      - properties:
-          baseFeedback:
-            $ref: '#/components/schemas/BaseFeedback'
-        required:
-        - baseFeedback
-      - properties:
-          serviFeedback:
-            $ref: '#/components/schemas/Feedback'
-        required:
-        - serviFeedback
-      - properties:
-          cartiFeedback:
-            $ref: '#/components/schemas/Feedback'
-        required:
-        - cartiFeedback
-      description: 'Feedback provides mission-specific runtime information.
-
-        Only one feedback type (baseFeedback, serviFeedback, or cartiFeedback) can be set at a time.'
-    RobotConnection:
-      type: object
-      properties:
-        state:
-          type: integer
-          format: enum
-      description: Represents the online connection state between the cloud and the robot.
     RobotState:
       type: object
       properties:
@@ -287,18 +239,89 @@ components:
           - $ref: '#/components/schemas/NavigationState'
           description: Navigation-related state of the robot, including whether it is currently stuck.
       description: Represents the overall state of the robot.
-    ErrorCodes:
+    MissionType:
+      type: object
+      oneOf:
+      - properties:
+          baseType:
+            type: integer
+            format: enum
+        required:
+        - baseType
+      - properties:
+          serviType:
+            type: integer
+            format: enum
+        required:
+        - serviType
+      - properties:
+          cartiType:
+            type: integer
+            format: enum
+        required:
+        - cartiType
+      description: "MissionType defines the different types of missions that can be executed.\n This uses a oneof structure to categorize mission types by their source.\n Only one type field (baseType, serviType, or cartiType) can be set at a time.\n The individual enum types are defined in their respective mission.proto files."
+    BaseFeedback:
       type: object
       properties:
-        codes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorCode'
+        status:
+          type: integer
+          format: enum
+      description: "BaseFeedback provides status updates on mission progress,\n specific to base missions."
+    GetRobotStatusRequest:
+      type: object
+      required:
+      - robotId
+      properties:
+        robotId:
+          type: string
+      description: Request object for retrieving robot status
+    ConveyorState:
+      type: object
+      properties:
+        index:
+          type: integer
+          description: Unique identifier for the conveyor.
+          format: int32
+        operationState:
+          type: integer
+          format: enum
+        payloadState:
+          type: integer
+          format: enum
+        healthState:
+          type: integer
+          format: enum
+        installationState:
+          type: integer
+          format: enum
+      description: Conveyor state includes the operation status, payload status, and health status.
+    StuckState:
+      type: object
+      properties:
+        state:
+          type: integer
+          format: enum
+          description: Current stuck state of the robot.
+        reason:
+          type: integer
+          format: enum
+          description: Reason the robot is stuck. Only meaningful when state is STATE_STUCK; otherwise expect REASON_UNKNOWN.
+      description: "Represents whether the robot is currently unable to make navigation\n progress, and the reason for it when known. \"Stuck\" is distinct from a\n mission failure: it is a transient, recoverable navigation condition."
     GetRobotStatusResponse:
       type: object
       properties:
         robotState:
           $ref: '#/components/schemas/RobotState'
+    TrayStates:
+      type: object
+      properties:
+        trayStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrayState'
+          description: "State of enabled trays, ordered from the top-most tray on the robot to the\n bottom."
+      description: A list of tray states reported by individual trays.
     EmergencyStopState:
       type: object
       properties:
@@ -311,42 +334,6 @@ components:
           description: Whether the physical emergency stop button is engaged.
           format: enum
       description: Represents the state of the robot's emergency stop system.
-    ErrorCode:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: "Integer code indicating the type of error. Does not indicate severity.\n Please refer to the error code documentation for more details.\n TODO(BA-545): Add link to error code documentation."
-          format: int32
-        severity:
-          type: integer
-          description: Level of criticality of an error.
-          format: enum
-        message:
-          type: string
-          description: Message about the error e.g. "Up camera process error."
-    Goal:
-      type: object
-      oneOf:
-      - required:
-        - destinationId
-        properties:
-          destinationId:
-            type: string
-      - required:
-        - pose
-        properties:
-          pose:
-            $ref: '#/components/schemas/Pose'
-      description: Goal represents a target destination or pose for the robot to navigate to.
-    GetRobotStatusRequest:
-      type: object
-      required:
-      - robotId
-      properties:
-        robotId:
-          type: string
-      description: Request object for retrieving robot status
     BatteryState:
       type: object
       properties:
@@ -361,13 +348,6 @@ components:
           type: integer
           format: enum
       description: Represents the state of the robot's battery system.
-    Feedback:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: enum
-      description: "Feedback provides status updates on mission progress,\n specific to Carti Family robot missions."
     CartiState:
       type: object
       properties:
@@ -376,23 +356,43 @@ components:
           - $ref: '#/components/schemas/ConveyorState'
           description: Conveyor state, only available for robots with a conveyor installed.
       description: Represents the set of robot states specifically for Carti robots.
-    NavigationState:
+    LocalizationState:
       type: object
       properties:
-        stuckState:
-          allOf:
-          - $ref: '#/components/schemas/StuckState'
-          description: Whether the robot is currently stuck (unable to make navigation progress) and, when known, the reason.
-      description: Represents navigation-related state for the robot.
+        state:
+          type: integer
+          format: enum
+      description: Represents the current state of the localization process.
+    MissionState_MissionFeedback:
+      type: object
+      oneOf:
+      - properties:
+          baseFeedback:
+            $ref: '#/components/schemas/BaseFeedback'
+        required:
+        - baseFeedback
+      - properties:
+          serviFeedback:
+            $ref: '#/components/schemas/Feedback'
+        required:
+        - serviFeedback
+      - properties:
+          cartiFeedback:
+            $ref: '#/components/schemas/Feedback'
+        required:
+        - cartiFeedback
+      description: 'Feedback provides mission-specific runtime information.
+
+        Only one feedback type (baseFeedback, serviFeedback, or cartiFeedback) can be set at a time.'
   responses:
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
     InternalServerError:
       description: Internal Server Error
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
     Unauthorized:
       description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:

@@ -83,48 +83,11 @@ paths:
       summary: API service list robot IDs
       x-summary-source: derived
 components:
-  schemas:
-    RobotFilter:
-      type: object
-      properties:
-        locationId:
-          type: string
-          description: "An empty location_id returns all robots authorized\n to the authenticated API key user."
-      description: RobotFilter defines a filter for selecting robots.
-    ListRobotIDsResponse:
-      type: object
-      properties:
-        totalRobots:
-          type: integer
-          format: int32
-        robotIds:
-          type: array
-          items:
-            type: string
-          description: "This might not have all the robot IDs if there are too many.\n It will have all the robot IDs if the number of robot_ids is same as\n total_robots."
-    ListRobotIDsRequest:
-      type: object
-      properties:
-        filter:
-          allOf:
-          - $ref: '#/components/schemas/RobotFilter'
-          description: Filter for selecting which robots to list. If omitted, all authorized robots are returned.
-      description: Request object for listing robot IDs
-    GetAvailableLocationsResponse:
-      type: object
-      properties:
-        locations:
-          type: object
-          additionalProperties:
-            type: string
-          description: "A mapping of location ID (key) with its corresponding, human-readable\n location name.\n e.g. { \"1D9X\": \"785_Platform\" }"
   responses:
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     InternalServerError:
       description: Internal Server Error
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:
@@ -136,8 +99,45 @@ components:
           schema:
             type: string
           description: detailed error message
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+  schemas:
+    GetAvailableLocationsResponse:
+      type: object
+      properties:
+        locations:
+          type: object
+          additionalProperties:
+            type: string
+          description: "A mapping of location ID (key) with its corresponding, human-readable\n location name.\n e.g. { \"1D9X\": \"785_Platform\" }"
+    RobotFilter:
+      type: object
+      properties:
+        locationId:
+          type: string
+          description: "An empty location_id returns all robots authorized\n to the authenticated API key user."
+      description: RobotFilter defines a filter for selecting robots.
+    ListRobotIDsRequest:
+      type: object
+      properties:
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/RobotFilter'
+          description: Filter for selecting which robots to list. If omitted, all authorized robots are returned.
+      description: Request object for listing robot IDs
+    ListRobotIDsResponse:
+      type: object
+      properties:
+        totalRobots:
+          type: integer
+          format: int32
+        robotIds:
+          type: array
+          items:
+            type: string
+          description: "This might not have all the robot IDs if there are too many.\n It will have all the robot IDs if the number of robot_ids is same as\n total_robots."
   securitySchemes:
     BearerAuth:
       type: http
