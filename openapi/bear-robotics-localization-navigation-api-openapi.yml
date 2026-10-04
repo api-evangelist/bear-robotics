@@ -90,10 +90,39 @@ paths:
       summary: API service localize robot
       x-summary-source: derived
 components:
+  responses:
+    InternalServerError:
+      description: Internal Server Error
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    BadRequest:
+      description: Bad Request, usually caused by malfored request body.
+      headers:
+        grpc-status:
+          schema:
+            type: integer
+          description: gRPC status code
+        grpc-message:
+          schema:
+            type: string
+          description: detailed error message
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
   schemas:
-    LocalizeRobotResponse:
+    LocalizeRobotRequest:
       type: object
-      properties: {}
+      required:
+      - robotId
+      - goal
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        goal:
+          $ref: '#/components/schemas/Goal'
+      description: Request object for localizing a robot
     SetPoseRequest:
       type: object
       required:
@@ -123,18 +152,9 @@ components:
     SetPoseResponse:
       type: object
       properties: {}
-    LocalizeRobotRequest:
+    LocalizeRobotResponse:
       type: object
-      required:
-      - robotId
-      - goal
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        goal:
-          $ref: '#/components/schemas/Goal'
-      description: Request object for localizing a robot
+      properties: {}
     Pose:
       type: object
       properties:
@@ -151,26 +171,6 @@ components:
           description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
           format: float
       description: Represents the robot's pose on the map.
-  responses:
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
-    InternalServerError:
-      description: Internal Server Error
-    BadRequest:
-      description: Bad Request, usually caused by malfored request body.
-      headers:
-        grpc-status:
-          schema:
-            type: integer
-          description: gRPC status code
-        grpc-message:
-          schema:
-            type: string
-          description: detailed error message
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
   securitySchemes:
     BearerAuth:
       type: http

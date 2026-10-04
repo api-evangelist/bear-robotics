@@ -110,10 +110,12 @@ paths:
       x-summary-source: derived
 components:
   responses:
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     InternalServerError:
       description: Internal Server Error
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:
@@ -125,10 +127,8 @@ components:
           schema:
             type: string
           description: detailed error message
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
   schemas:
     ConveyorMotorCommand:
       type: object
@@ -145,6 +145,14 @@ components:
           format: enum
           description: Motor command (stop, clockwise, or counter-clockwise). COMMAND_CONVEYOR_MOTOR_UNKNOWN (0) is not allowed.
       description: Command to control a conveyor motor
+    GetConveyorIndexResponse:
+      type: object
+      properties:
+        indexes:
+          type: array
+          items:
+            type: integer
+            format: int32
     ControlConveyorRequest:
       type: object
       required:
@@ -159,14 +167,6 @@ components:
             $ref: '#/components/schemas/ConveyorMotorCommand'
           description: List of conveyor motor commands to execute
       description: Request object for controlling conveyor operations
-    GetConveyorIndexResponse:
-      type: object
-      properties:
-        indexes:
-          type: array
-          items:
-            type: integer
-            format: int32
     ControlConveyorResponse:
       type: object
       properties: {}
