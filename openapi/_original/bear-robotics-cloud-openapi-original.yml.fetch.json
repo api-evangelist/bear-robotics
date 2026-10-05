@@ -1,0 +1,12 @@
+{
+ "url": "https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/openapi-v1-3.yaml",
+ "requested_url": "https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/openapi-v1-3.yaml",
+ "status": 200,
+ "content_type": "text/yaml",
+ "bytes": 96575,
+ "sha256": "b90843b624b577f84e7b75ba79e23058c1d6b7be1cb385eb97cf22bf957d68d4",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
