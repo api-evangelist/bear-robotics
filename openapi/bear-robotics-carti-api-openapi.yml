@@ -110,8 +110,8 @@ paths:
       x-summary-source: derived
 components:
   responses:
-    InternalServerError:
-      description: Internal Server Error
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     ServiceUnavailable:
       description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
     Unauthorized:
@@ -127,9 +127,12 @@ components:
           schema:
             type: string
           description: detailed error message
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    InternalServerError:
+      description: Internal Server Error
   schemas:
+    ControlConveyorResponse:
+      type: object
+      properties: {}
     ConveyorMotorCommand:
       type: object
       required:
@@ -167,9 +170,6 @@ components:
             $ref: '#/components/schemas/ConveyorMotorCommand'
           description: List of conveyor motor commands to execute
       description: Request object for controlling conveyor operations
-    ControlConveyorResponse:
-      type: object
-      properties: {}
   securitySchemes:
     BearerAuth:
       type: http

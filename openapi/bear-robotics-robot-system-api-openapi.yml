@@ -94,6 +94,22 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    SystemInfo:
+      type: object
+      properties:
+        softwareVersion:
+          type: string
+          description: "The distribution version currently installed and running on the robot.\n e.g. \"servi-24.03\""
+        robotFamily:
+          type: integer
+          format: enum
+        robotId:
+          type: string
+          description: Unique identifier for the robot. e.g. "pennybot-abc123"
+        displayName:
+          type: string
+          description: A user-friendly name for the robot, typically used for display purposes.
+      description: SystemInfo contains various system-level data of a robot.
     RunSystemCommandRequest:
       type: object
       required:
@@ -124,33 +140,17 @@ components:
             required:
             - shutdown
       description: Request object for running system commands
-    RunSystemCommandResponse:
-      type: object
-      properties: {}
-    SystemInfo:
-      type: object
-      properties:
-        softwareVersion:
-          type: string
-          description: "The distribution version currently installed and running on the robot.\n e.g. \"servi-24.03\""
-        robotFamily:
-          type: integer
-          format: enum
-        robotId:
-          type: string
-          description: Unique identifier for the robot. e.g. "pennybot-abc123"
-        displayName:
-          type: string
-          description: A user-friendly name for the robot, typically used for display purposes.
-      description: SystemInfo contains various system-level data of a robot.
     GetRobotSystemInfoResponse:
       type: object
       properties:
         systemInfo:
           $ref: '#/components/schemas/SystemInfo'
+    RunSystemCommandResponse:
+      type: object
+      properties: {}
   responses:
-    InternalServerError:
-      description: Internal Server Error
+    GatewayTimeout:
+      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     ServiceUnavailable:
       description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
     Unauthorized:
@@ -166,8 +166,8 @@ components:
           schema:
             type: string
           description: detailed error message
-    GatewayTimeout:
-      description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
+    InternalServerError:
+      description: Internal Server Error
   securitySchemes:
     BearerAuth:
       type: http

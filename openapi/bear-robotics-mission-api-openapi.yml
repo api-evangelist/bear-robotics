@@ -370,10 +370,142 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    TrayMapping:
+      type: object
+      properties:
+        trayName:
+          type: string
+        goal:
+          $ref: '#/components/schemas/Goal'
+      description: Maps a tray to a delivery goal.
+    MissionWorkflow:
+      type: object
+      oneOf:
+      - properties:
+          serviWorkflow:
+            $ref: '#/components/schemas/ServiWorkflow'
+        required:
+        - serviWorkflow
+      - properties:
+          cartiWorkflow:
+            $ref: '#/components/schemas/CartiWorkflow'
+        required:
+        - cartiWorkflow
+      description: Preset workflow to run. Only one workflow type may be set at a time.
     DeliveryPatrolParams:
       type: object
       properties: {}
       description: Parameters for a delivery patrol mission (reserved for future use)
+    CreateMissionWorkflowResponse:
+      type: object
+      properties:
+        missionIds:
+          type: array
+          items:
+            type: string
+          description: The IDs of the missions created for this workflow.
+    ServiMission:
+      type: object
+      oneOf:
+      - properties:
+          deliveryMission:
+            $ref: '#/components/schemas/DeliveryMission'
+        required:
+        - deliveryMission
+      - properties:
+          bussingMission:
+            $ref: '#/components/schemas/BussingMission'
+        required:
+        - bussingMission
+      - properties:
+          deliveryPatrolMission:
+            $ref: '#/components/schemas/DeliveryPatrolMission'
+        required:
+        - deliveryPatrolMission
+      - properties:
+          bussingPatrolMission:
+            $ref: '#/components/schemas/BussingPatrolMission'
+        required:
+        - bussingPatrolMission
+      - properties:
+          navigateMission:
+            $ref: '#/components/schemas/NavigateMission'
+        required:
+        - navigateMission
+      - properties:
+          navigateAutoMission:
+            $ref: '#/components/schemas/NavigateAutoMission'
+        required:
+        - navigateAutoMission
+      description: Servi missions are specific to the Servi robot family
+    Goal:
+      type: object
+      oneOf:
+      - required:
+        - destinationId
+        properties:
+          destinationId:
+            type: string
+      - required:
+        - pose
+        properties:
+          pose:
+            $ref: '#/components/schemas/Pose'
+      description: Goal represents a target destination or pose for the robot to navigate to.
+    NavigateAutoMission:
+      type: object
+      properties:
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Goal'
+      description: A mission that automatically selects the best available goal from the provided list
+    BussingMission:
+      type: object
+      properties:
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Goal'
+        params:
+          $ref: '#/components/schemas/BussingParams'
+      description: A bussing mission that navigates to one or more goals, stopping at each for a time limit or until weight is added
+    AppendMissionBatchResponse:
+      type: object
+      properties:
+        missionIds:
+          type: array
+          items:
+            type: string
+          description: The IDs of the appended missions, in the same order as the request.
+    ChargeRobotResponse:
+      type: object
+      properties:
+        missionId:
+          type: string
+    UpdateMissionResponse:
+      type: object
+      properties: {}
+    AppendMissionResponse:
+      type: object
+      properties:
+        missionId:
+          type: string
+    CreateMissionBatchRequest:
+      type: object
+      required:
+      - robotId
+      - missions
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        missions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mission'
+          description: The missions to create, in request order.
+      description: Request object for atomically creating multiple missions
     NavigateMission:
       type: object
       properties:
@@ -390,92 +522,6 @@ components:
         params:
           $ref: '#/components/schemas/TraverseParams'
       description: A traverse mission that navigates to one or more goals
-    TrayMapping:
-      type: object
-      properties:
-        trayName:
-          type: string
-        goal:
-          $ref: '#/components/schemas/Goal'
-      description: Maps a tray to a delivery goal.
-    DeliveryMission:
-      type: object
-      properties:
-        goals:
-          type: array
-          items:
-            $ref: '#/components/schemas/Goal'
-        params:
-          $ref: '#/components/schemas/DeliveryParams'
-      description: A delivery mission that navigates to one or more goals, stopping at each for a time limit or until weight is removed
-    MissionWorkflow:
-      type: object
-      oneOf:
-      - properties:
-          serviWorkflow:
-            $ref: '#/components/schemas/ServiWorkflow'
-        required:
-        - serviWorkflow
-      - properties:
-          cartiWorkflow:
-            $ref: '#/components/schemas/CartiWorkflow'
-        required:
-        - cartiWorkflow
-      description: Preset workflow to run. Only one workflow type may be set at a time.
-    CreateMissionBatchRequest:
-      type: object
-      required:
-      - robotId
-      - missions
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        missions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Mission'
-          description: The missions to create, in request order.
-      description: Request object for atomically creating multiple missions
-    AppendMissionResponse:
-      type: object
-      properties:
-        missionId:
-          type: string
-    TraversePatrolMission:
-      type: object
-      properties:
-        goals:
-          type: array
-          items:
-            $ref: '#/components/schemas/Goal'
-        params:
-          $ref: '#/components/schemas/TraversePatrolParams'
-      description: A traverse patrol mission that navigates to one or more goals and continuously loops through the goals stopping at each for a time limit
-    AppendMissionRequest:
-      type: object
-      required:
-      - robotId
-      - mission
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        mission:
-          $ref: '#/components/schemas/Mission'
-      description: Request object for appending a mission
-    CreateMissionWorkflowRequest:
-      type: object
-      required:
-      - robotId
-      - missionWorkflow
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        missionWorkflow:
-          $ref: '#/components/schemas/MissionWorkflow'
-      description: Request object for creating a mission workflow
     CartiMission:
       type: object
       oneOf:
@@ -500,63 +546,10 @@ components:
         required:
         - navigateAutoMission
       description: Carti missions are specific to the Carti robot family
-    TraverseParams:
+    BussingPatrolParams:
       type: object
       properties: {}
-      description: Parameters for a traverse mission (reserved for future use)
-    SkipGoalResponse:
-      type: object
-      properties:
-        missionId:
-          type: string
-          description: The ID of the mission where the goal was skipped.
-    Goal:
-      type: object
-      oneOf:
-      - required:
-        - destinationId
-        properties:
-          destinationId:
-            type: string
-      - required:
-        - pose
-        properties:
-          pose:
-            $ref: '#/components/schemas/Pose'
-      description: Goal represents a target destination or pose for the robot to navigate to.
-    CreateMissionRequest:
-      type: object
-      required:
-      - robotId
-      - mission
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        mission:
-          $ref: '#/components/schemas/Mission'
-      description: Request object for creating a new mission
-    ClearMissionStatusRequest:
-      type: object
-      required:
-      - robotId
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-      description: Request object for clearing the robot's mission status
-    SkipGoalRequest:
-      type: object
-      required:
-      - robotId
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-      description: Request object for skipping a goal
-    UpdateMissionResponse:
-      type: object
-      properties: {}
+      description: Parameters for a bussing patrol mission (reserved for future use)
     ServiWorkflow:
       type: object
       oneOf:
@@ -629,39 +622,19 @@ components:
         required:
         - hostingPatrol
       description: Servi preset workflows. Each type takes only goals (or a single goal for birthday) with no params.
-    ChargeRobotResponse:
+    AppendMissionRequest:
       type: object
+      required:
+      - robotId
+      - mission
       properties:
-        missionId:
+        robotId:
           type: string
-    NavigateAutoMission:
-      type: object
-      properties:
-        goals:
-          type: array
-          items:
-            $ref: '#/components/schemas/Goal'
-      description: A mission that automatically selects the best available goal from the provided list
-    Mission:
-      type: object
-      oneOf:
-      - properties:
-          baseMission:
-            $ref: '#/components/schemas/BaseMission'
-        required:
-        - baseMission
-      - properties:
-          serviMission:
-            $ref: '#/components/schemas/ServiMission'
-        required:
-        - serviMission
-      - properties:
-          cartiMission:
-            $ref: '#/components/schemas/CartiMission'
-        required:
-        - cartiMission
-      description: Represents a mission that can be assigned to a robot. Only one mission type can be set per Mission instance.
-    BussingMission:
+          description: Unique identifier of the robot
+        mission:
+          $ref: '#/components/schemas/Mission'
+      description: Request object for appending a mission
+    BussingPatrolMission:
       type: object
       properties:
         goals:
@@ -669,8 +642,111 @@ components:
           items:
             $ref: '#/components/schemas/Goal'
         params:
-          $ref: '#/components/schemas/BussingParams'
-      description: A bussing mission that navigates to one or more goals, stopping at each for a time limit or until weight is added
+          $ref: '#/components/schemas/BussingPatrolParams'
+      description: A bussing patrol mission that continuously loops through goals, stopping at each for a time limit until weight exceeds a threshold
+    CreateMissionBatchResponse:
+      type: object
+      properties:
+        missionIds:
+          type: array
+          items:
+            type: string
+          description: The IDs of the created missions, in the same order as the request.
+    CreateMissionRequest:
+      type: object
+      required:
+      - robotId
+      - mission
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        mission:
+          $ref: '#/components/schemas/Mission'
+      description: Request object for creating a new mission
+    BaseMission:
+      type: object
+      oneOf:
+      - properties:
+          navigateMission:
+            $ref: '#/components/schemas/NavigateMission'
+        required:
+        - navigateMission
+      - properties:
+          navigateAutoMission:
+            $ref: '#/components/schemas/NavigateAutoMission'
+        required:
+        - navigateAutoMission
+      description: Base missions are applicable to all robot families
+    DeliveryParams:
+      type: object
+      properties:
+        trayMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrayMapping'
+          description: Tray mappings for the delivery mission. Only supported for Servi+ robots.
+      description: Parameters for a delivery mission
+    Pose:
+      type: object
+      properties:
+        xMeters:
+          type: number
+          description: X-coordinate in meters within the map.
+          format: float
+        yMeters:
+          type: number
+          description: Y-coordinate in meters within the map.
+          format: float
+        headingRadians:
+          type: number
+          description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
+          format: float
+      description: Represents the robot's pose on the map.
+    ClearMissionStatusRequest:
+      type: object
+      required:
+      - robotId
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+      description: Request object for clearing the robot's mission status
+    DeliveryMission:
+      type: object
+      properties:
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Goal'
+        params:
+          $ref: '#/components/schemas/DeliveryParams'
+      description: A delivery mission that navigates to one or more goals, stopping at each for a time limit or until weight is removed
+    TraversePatrolMission:
+      type: object
+      properties:
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Goal'
+        params:
+          $ref: '#/components/schemas/TraversePatrolParams'
+      description: A traverse patrol mission that navigates to one or more goals and continuously loops through the goals stopping at each for a time limit
+    TraversePatrolParams:
+      type: object
+      properties: {}
+      description: Parameters for a traverse patrol mission (reserved for future use)
+    SkipGoalResponse:
+      type: object
+      properties:
+        missionId:
+          type: string
+          description: The ID of the mission where the goal was skipped.
+    CreateMissionResponse:
+      type: object
+      properties:
+        missionId:
+          type: string
     UpdateMissionRequest:
       type: object
       required:
@@ -694,44 +770,53 @@ components:
               format: enum
               description: The command to execute on the mission
       description: Request object for updating a mission
-    ClearMissionStatusResponse:
+    SkipGoalRequest:
       type: object
+      required:
+      - robotId
       properties:
-        missionIds:
-          type: array
-          items:
-            type: string
-          description: The unique identifiers of the cleared missions.
-    BussingParams:
-      type: object
-      properties: {}
-      description: Parameters for a bussing mission (reserved for future use)
-    BussingPatrolParams:
-      type: object
-      properties: {}
-      description: Parameters for a bussing patrol mission (reserved for future use)
-    BaseMission:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+      description: Request object for skipping a goal
+    Mission:
       type: object
       oneOf:
       - properties:
-          navigateMission:
-            $ref: '#/components/schemas/NavigateMission'
+          baseMission:
+            $ref: '#/components/schemas/BaseMission'
         required:
-        - navigateMission
+        - baseMission
       - properties:
-          navigateAutoMission:
-            $ref: '#/components/schemas/NavigateAutoMission'
+          serviMission:
+            $ref: '#/components/schemas/ServiMission'
         required:
-        - navigateAutoMission
-      description: Base missions are applicable to all robot families
-    CreateMissionWorkflowResponse:
+        - serviMission
+      - properties:
+          cartiMission:
+            $ref: '#/components/schemas/CartiMission'
+        required:
+        - cartiMission
+      description: Represents a mission that can be assigned to a robot. Only one mission type can be set per Mission instance.
+    TraverseParams:
       type: object
+      properties: {}
+      description: Parameters for a traverse mission (reserved for future use)
+    AppendMissionBatchRequest:
+      type: object
+      required:
+      - robotId
+      - missions
       properties:
-        missionIds:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        missions:
           type: array
           items:
-            type: string
-          description: The IDs of the missions created for this workflow.
+            $ref: '#/components/schemas/Mission'
+          description: The missions to append, in request order.
+      description: Request object for atomically appending multiple missions
     ChargeRobotRequest:
       type: object
       required:
@@ -741,6 +826,36 @@ components:
           type: string
           description: Unique identifier of the robot
       description: Request object for sending a robot to charge
+    CreateMissionWorkflowRequest:
+      type: object
+      required:
+      - robotId
+      - missionWorkflow
+      properties:
+        robotId:
+          type: string
+          description: Unique identifier of the robot
+        missionWorkflow:
+          $ref: '#/components/schemas/MissionWorkflow'
+      description: Request object for creating a mission workflow
+    ClearMissionStatusResponse:
+      type: object
+      properties:
+        missionIds:
+          type: array
+          items:
+            type: string
+          description: The unique identifiers of the cleared missions.
+    DeliveryPatrolMission:
+      type: object
+      properties:
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Goal'
+        params:
+          $ref: '#/components/schemas/DeliveryPatrolParams'
+      description: A delivery patrol mission that continuously loops through goals, stopping at each for a time limit until all weight is removed
     CartiWorkflow:
       type: object
       oneOf:
@@ -765,134 +880,15 @@ components:
         required:
         - traversePatrol
       description: Carti preset workflows. Each type takes only goals with no params.
-    CreateMissionBatchResponse:
-      type: object
-      properties:
-        missionIds:
-          type: array
-          items:
-            type: string
-          description: The IDs of the created missions, in the same order as the request.
-    DeliveryParams:
-      type: object
-      properties:
-        trayMappings:
-          type: array
-          items:
-            $ref: '#/components/schemas/TrayMapping'
-          description: Tray mappings for the delivery mission. Only supported for Servi+ robots.
-      description: Parameters for a delivery mission
-    TraversePatrolParams:
+    BussingParams:
       type: object
       properties: {}
-      description: Parameters for a traverse patrol mission (reserved for future use)
-    BussingPatrolMission:
-      type: object
-      properties:
-        goals:
-          type: array
-          items:
-            $ref: '#/components/schemas/Goal'
-        params:
-          $ref: '#/components/schemas/BussingPatrolParams'
-      description: A bussing patrol mission that continuously loops through goals, stopping at each for a time limit until weight exceeds a threshold
-    DeliveryPatrolMission:
-      type: object
-      properties:
-        goals:
-          type: array
-          items:
-            $ref: '#/components/schemas/Goal'
-        params:
-          $ref: '#/components/schemas/DeliveryPatrolParams'
-      description: A delivery patrol mission that continuously loops through goals, stopping at each for a time limit until all weight is removed
-    CreateMissionResponse:
-      type: object
-      properties:
-        missionId:
-          type: string
-    Pose:
-      type: object
-      properties:
-        xMeters:
-          type: number
-          description: X-coordinate in meters within the map.
-          format: float
-        yMeters:
-          type: number
-          description: Y-coordinate in meters within the map.
-          format: float
-        headingRadians:
-          type: number
-          description: "The heading of the robot in radians.\n Ranges from -π to π, where 0.0 points along the positive x-axis."
-          format: float
-      description: Represents the robot's pose on the map.
-    AppendMissionBatchResponse:
-      type: object
-      properties:
-        missionIds:
-          type: array
-          items:
-            type: string
-          description: The IDs of the appended missions, in the same order as the request.
-    ServiMission:
-      type: object
-      oneOf:
-      - properties:
-          deliveryMission:
-            $ref: '#/components/schemas/DeliveryMission'
-        required:
-        - deliveryMission
-      - properties:
-          bussingMission:
-            $ref: '#/components/schemas/BussingMission'
-        required:
-        - bussingMission
-      - properties:
-          deliveryPatrolMission:
-            $ref: '#/components/schemas/DeliveryPatrolMission'
-        required:
-        - deliveryPatrolMission
-      - properties:
-          bussingPatrolMission:
-            $ref: '#/components/schemas/BussingPatrolMission'
-        required:
-        - bussingPatrolMission
-      - properties:
-          navigateMission:
-            $ref: '#/components/schemas/NavigateMission'
-        required:
-        - navigateMission
-      - properties:
-          navigateAutoMission:
-            $ref: '#/components/schemas/NavigateAutoMission'
-        required:
-        - navigateAutoMission
-      description: Servi missions are specific to the Servi robot family
-    AppendMissionBatchRequest:
-      type: object
-      required:
-      - robotId
-      - missions
-      properties:
-        robotId:
-          type: string
-          description: Unique identifier of the robot
-        missions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Mission'
-          description: The missions to append, in request order.
-      description: Request object for atomically appending multiple missions
+      description: Parameters for a bussing mission (reserved for future use)
   responses:
     GatewayTimeout:
       description: Server-side timeout, usually caused by the failure to send/receive commands/responses to the designated robot.
     InternalServerError:
       description: Internal Server Error
-    Unauthorized:
-      description: Unauthorized credentials, ensure the JWT is correct and up to date.
-    ServiceUnavailable:
-      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
     BadRequest:
       description: Bad Request, usually caused by malfored request body.
       headers:
@@ -904,6 +900,10 @@ components:
           schema:
             type: string
           description: detailed error message
+    ServiceUnavailable:
+      description: Service is temporarily unavailable, which can usually be resolved by backoff retries.
+    Unauthorized:
+      description: Unauthorized credentials, ensure the JWT is correct and up to date.
   securitySchemes:
     BearerAuth:
       type: http
