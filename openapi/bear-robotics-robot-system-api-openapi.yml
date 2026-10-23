@@ -174,3 +174,9 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT token obtained from the /authorizeApiAccess endpoint
+x-provenance:
+  method: harvested
+  publisher: Bear Robotics
+  source: https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/openapi-v1-3.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
