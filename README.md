@@ -64,5 +64,139 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Bear Robotics is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://forgeglobal.com/bear-robotics_stock/
+Bear Robotics builds AI-driven autonomous mobile robots for hospitality and service environments — the Servi family (Servi, Servi Plus, Servi Q, Servi Clean) for restaurants, senior living, hotels and hospitals, the Carti cargo line for warehouses and factories, and Kinisi — all managed through the Bear Universe cloud fleet platform. Founded in 2017 by former Google engineer John Ha, headquartered in Redwood City, California, and now majority-owned by LG Electronics. Bear publishes a genuinely open, gRPC-first third-party developer surface: the Bear Cloud API (39 RPCs, 27 unary and 12 server-streaming) for creating missions, streaming robot state and managing fleets, plus an on-robot Bear Base API for direct local control. The Protobuf definitions are published under MPL-2.0 in a public GitHub organization, an OpenAPI 3.0.3 document covers the transcoded REST projection, and v1.3 added outbound webhooks. API keys are issued through an account manager rather than self-serve signup.
+
+**Areas:** Robotics · Autonomous Mobile Robots · Fleet Management · Hospitality · Food Service · Logistics · gRPC · Protobuf · Webhook · IoT · Company
+
+## Bear Robotics on APIs.io
+
+Everything profiled for Bear Robotics is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/bear-robotics/](https://apis.io/providers/bear-robotics/)** — or go straight to one of the APIs or properties below.
+
+### APIs (9)
+
+- [Bear Base API](https://apis.io/apis/bear-robotics/bear-base-api/) — The on-robot gRPC service for direct local control of a Bear robot, used where the cloud is not in the path. 23 RPCs covering drive/twist commands,…
+- [Bear Robotics Carti API](https://apis.io/apis/bear-robotics/bear-robotics-carti-api/) — Carti-specific operations
+- [Bear Robotics Fleet Management API](https://apis.io/apis/bear-robotics/bear-robotics-fleet-management-api/) — Fleet-level operations
+- [Bear Robotics Localization & Navigation API](https://apis.io/apis/bear-robotics/bear-robotics-localization-navigation-api/) — Low-level endpoints for robot pose and localization
+- [Bear Robotics Locations & Maps API](https://apis.io/apis/bear-robotics/bear-robotics-locations-maps-api/) — Operations for fetching and setting location and map settings
+- [Bear Robotics Mission API](https://apis.io/apis/bear-robotics/bear-robotics-mission-api/) — Basic mission-related operations
+- [Bear Robotics Robot Status API](https://apis.io/apis/bear-robotics/bear-robotics-robot-status-api/) — Queries for real-time robot status data
+- [Bear Robotics Robot System API](https://apis.io/apis/bear-robotics/bear-robotics-robot-system-api/) — System-level operations and Queries for static robot configurations
+- [Bear Robotics Servi API](https://apis.io/apis/bear-robotics/bear-robotics-servi-api/) — Servi-specific operations
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Bear Robotics Webhooks](https://apis.io/asyncapis/bear-robotics/bear-robotics-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [bear-robotics](https://apis.io/servers/bear-robotics/bear-robotics/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Bear Robotics Agentic Access](https://apis.io/agentic-access/bear-robotics/bear-robotics-agentic-access/)
+
+#### Collections (9)
+
+Postman and Open Collection request collections.
+
+- [Bear Cloud Carti API](https://apis.io/collections/bear-robotics/open-bear-robotics-carti-api/)
+- [API Collection](https://apis.io/collections/bear-robotics/open-bear-robotics-cloud-v1-3-postman-collection/)
+- [Bear Cloud Fleet Management API](https://apis.io/collections/bear-robotics/open-bear-robotics-fleet-management-api/)
+- [Bear Cloud Localization & Navigation API](https://apis.io/collections/bear-robotics/open-bear-robotics-localization-navigation-api/)
+- [Bear Cloud Locations & Maps API](https://apis.io/collections/bear-robotics/open-bear-robotics-locations-maps-api/)
+- [Bear Cloud Mission API](https://apis.io/collections/bear-robotics/open-bear-robotics-mission-api/)
+- [Bear Cloud Robot Status API](https://apis.io/collections/bear-robotics/open-bear-robotics-robot-status-api/)
+- [Bear Cloud Robot System API](https://apis.io/collections/bear-robotics/open-bear-robotics-robot-system-api/)
+- [Bear Cloud Servi API](https://apis.io/collections/bear-robotics/open-bear-robotics-servi-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Bear Robotics Cloud Overlay](https://apis.io/overlays/bear-robotics/bear-robotics-cloud-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Bear Robotics Authentication](https://apis.io/security/bear-robotics/bear-robotics-authentication/)
+- [Bear Robotics Domain Security](https://apis.io/security/bear-robotics/bear-robotics-domain-security/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.bearrobotics.ai/)
+- [Documentation](https://cloud.api.bearrobotics.ai/)
+- [Getting started](https://cloud.api.bearrobotics.ai/guides/getting-started/)
+- [API reference](https://cloud.api.bearrobotics.ai/v1.3/resources/RestAPI/)
+- [Blog](https://www.bearrobotics.ai/blog)
+- [Terms of service](https://www.bearrobotics.ai/legal)
+- [Privacy policy](https://www.bearrobotics.ai/privacy-policy)
+- [GitHub](https://github.com/bearrobotics-public)
+
+## API Evangelist rating
+
+**Kin Score 45.1** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 56.1 |
+| Contract governance | 4.5 |
+| Operational transparency | 34.2 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 27.6 |
+
+**Agent readiness 26.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/bear-robotics/](https://apis.io/providers/bear-robotics/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Bear Robotics: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/bear-robotics/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
